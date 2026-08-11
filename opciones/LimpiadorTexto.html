@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpiador y Formateador de Texto</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --border-color: #cbd5e1;
+            --radius: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+        }
+
+        body {
+            background-image: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+            user-select: none;
+        }
+
+        .container {
+            background: rgba(30, 41, 59, 0.7);
+            width: 100%;
+            max-width: 800px;
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+
+        header {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        header .home {
+            width: 100%;
+            height: 5vh;
+            display: flex;
+            justify-content: left;
+            align-items: center;
+        }
+
+        .home button{
+            width: auto;
+            height: 100%;
+            padding: 1%;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            border: 1px solid transparent;
+            background-color: rgba(6, 22, 46, 0.7);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 8px;
+        }
+
+        p {
+            font-size: 0.95rem;
+            color: #afb6c0;
+        }
+
+        .workspace {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .workspace {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .panel {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        textarea {
+            width: 100%;
+            height: 250px;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            resize: vertical;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        .toolbar button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .toolbar button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .toolbar button .secondary {
+            background-color: #e2e8f0;
+            color: #475569;
+        }
+
+        .toolbar button .secondary:hover {
+            background-color: #cbd5e1;
+        }
+
+        .stats {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #afb6c0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <div class="home">
+            <button onclick="window.location.href='../index.html'">Regresar</button>
+            </div>
+            <h1>Limpiador y Formateador de Texto</h1>
+            <p>Elimina saltos de línea extra, espacios dobles y unifica el formato al instante.</p>
+        </header>
+
+        <div class="workspace">
+            <div class="pane">
+                <label for="inputText">Texto Original (PDF / Web)</label>
+                <textarea id="inputText" placeholder="Pega tu texto desordenado aquí..."></textarea>
+            </div>
+
+            <div class="panel">
+                <label for="outputText">Texto Limpio</label>
+                <textarea id="outputText" placeholder="El resultado aparecerá aquí..." readonly></textarea>
+            </div>
+        </div>
+
+        <div class="toolbar">
+            <button onclick="cleanText()">Limpiar Texto</button>
+            <button class="secondary" onclick="copyToClipboard()">Copiar Resultado</button>
+            <button class="secondary" onclick="clearAll()">Borrar Todo</button>
+        </div>
+
+        <div class="stats" id="stats">
+            Palabras: 0 | Caracteres: 0
+        </div>
+    </div>
+
+    <script>
+        function cleanText() {
+            let text = document.getElementById('inputText').value;
+
+            if (!text.trim()) {
+                document.getElementById('outputText').value = '';
+                updateStats('');
+                return;
+            }
+
+            text = text.split('\n').map(line => line.trim()).join(' ');
+
+            text = text.replace(/\s+/g, ' ');
+            
+            document.getElementById('outputText').value = text.trim();
+            updateStats(text.trim());
+        }
+
+        function copyToClipboard() {
+            const outputText = document.getElementById('outputText');
+            if (!outputText.value) return;
+            
+            outputText.select();
+            document.execCommand('copy');
+            alert('¡Texto copiado al portapapeles!');
+        }
+
+        function clearAll() {
+            document.getElementById('inputText').value = '';
+            document.getElementById('outputText').value = '';
+            updateStats('');
+        }
+
+        function updateStats(text) {
+            const words = text ? text.split(/\s+/).length : 0;
+            const chars = text.length;
+            document.getElementById('stats').innerText = `Palabras: ${words} | Caracteres: ${chars}`;
+        }
+    </script>
+
+</body>
+</html>
