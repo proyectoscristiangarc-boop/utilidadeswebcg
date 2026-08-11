@@ -1,154 +1,19 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cristian Garcia</title>
-    <style>
-        /* --- RESET Y ESTILOS GENERALES --- */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+<div align="center">
 
-        body {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            color: #f8fafc;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            user-select: none;
-        }
+# 🛠️ Portal de Herramientas
 
-        .container {
-            max-width: 1000px;
-            width: 100%;
-            margin: 0 auto;
-            text-align: center;
-            padding: 40px 20px;
-        }
-        
-        header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #38bdf8;
-        }
+*Una colección centralizada de utilidades, scripts y recursos para potenciar el desarrollo de tus proyectos.*
 
-        header p {
-            font-size: 1.1rem;
-            color: #94a3b8;
-            margin-bottom: 40px;
-        }
+[![Estado del Proyecto](https://img.shields.io/badge/Estado-Activo-success?style=for-the-badge&logo=git&logoColor=white)](https://github.com/tu-usuario/tu-repositorio)
+[![Licencia](https://img.shields.io/badge/Licencia-MIT-blue?style=for-the-badge)](LICENSE)
+[![Contribuciones](https://img.shields.io/badge/PRs-Bienvenidos-orange?style=for-the-badge)](CONTRIBUTING.md)
 
-        /* --- GRID DE TARJETAS (LINKS) --- */
-        .tools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-            width: 100%;
-        }
+</div>
 
-        .tool-card {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 30px 20px;
-            text-decoration: none;
-            color: inherit;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            backdrop-filter: blur(10px);
-        }
+---
 
-        .tool-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px -5px rgba(56, 189, 248, 0.3);
-            border-color: #38bdf8;
-        }
+## 🚀 ¿Qué es este portal?
 
-        /* Iconos simulados con CSS/Emojis */
-        .tool-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
+Bienvenido al **Portal de Herramientas**. Este repositorio nace con el objetivo de agrupar en un solo lugar todas esas herramientas, automatizaciones y recursos clave que facilitan el día a día. ¡Todo accesible, rápido y open source!
 
-        .tool-card h3 {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
-            color: #f1f5f9;
-        }
-
-        .tool-card p {
-            font-size: 0.9rem;
-            color: #94a3b8;
-            line-height: 1.4;
-        }
-
-        /* --- PIE DE PÁGINA --- */
-        footer {
-            margin-top: 40px;
-            text-align: center;
-            font-size: 0.85rem;
-            color: #64748b;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            width: 100%;
-            padding-top: 20px;
-        }
-    </style>
-</head>
-<body>
-
-    <div class="container">
-        <!-- Cabecera de Bienvenida -->
-        <header>
-            <h1>Bienvenido a Utilidades Web</h1>
-            <p>Selecciona una herramienta para comenzar a trabajar de forma rápida y sencilla.</p>
-        </header>
-
-        <!-- Sección de Enlaces / Tarjetas -->
-        <main class="tools-grid">
-            
-            <a href="opciones/GeneradorQR.html" class="tool-card">
-                <div class="tool-icon">&#128241;</div>
-                <h3>Generador QR</h3>
-                <p>Crea QR con texto, url, o datos</p>
-            </a>
-
-            <a href="opciones/GeneradorQRPhone.html" class="tool-card">
-                <div class="tool-icon">&#128241;</div>
-                <h3>Generador de QR</h3>
-                <p>Crea QR con numeros telefonicos</p>
-            </a>
-
-            <a href="opciones/AcotadorURL.html" class="tool-card">
-                <div class="tool-icon">&#128279;</div>
-                <h3>Acotador de URL</h3>
-                <p>Acota tus url a una mas sencilla</p>
-            </a>
-
-            <a href="opciones/AcotadorWhatsapp.html" class="tool-card">
-                <div class="tool-icon">&#128187;</div>
-                <h3>Generador de Enlaces para WhatsApp</h3>
-                <p>Crea enlaces directos para WhatsApp de forma rápida y gratuita.</p>
-            </a>
-            <a href="opciones/LimpiadorTexto.html" class="tool-card">
-                <div class="tool-icon">&#128221;</div>
-                <h3>Limpiador y Formateador de Texto para Informes</h3>
-                <p>Elimina saltos de línea extra, espacios dobles y unifica el formato al instante.</p>
-            </a>
-        </main>
-    </div>
-
-    <footer>
-        <p>&copy; 2026 Tu Portal de Herramientas. Todos los derechos reservados.</p>
-    </footer>
-
-</body>
-</html>
+---
