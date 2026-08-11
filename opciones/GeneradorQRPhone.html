@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de QR para Contactos Telefónicos</title>
+    <!-- Librería QRCode.js para generar los códigos QR -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        
+        :root {
+            --primary-color: #4f46e5;
+            --primary-hover: #4338ca;
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-color: white;
+            --border-color: #d1d5db;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-image: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            user-select: none;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(30, 41, 59, 0.7);
+            width: 100%;
+            max-width: 450px;
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        .container .home {
+            width: 100%;
+            height: 5vh;
+            display: flex;
+            justify-content: left;
+            align-items: center;
+            margin-bottom: 5%;
+        }
+
+        .home button{
+            width: auto;
+            height: 100%;
+            padding: 2%;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            border: 1px solid transparent;
+            background-color: rgba(6, 22, 46, 0.7);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: var(--text-color);
+        }
+
+        p.subtitle {
+            font-size: 0.9rem;
+            color: #afb6c0;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #afb6c0;
+        }
+
+        input[type="text"],
+        input[type="tel"],
+        input[type="email"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        input[type="tel"]:focus,
+        input[type="email"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+
+        .phone-input-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .country-code-wrapper {
+            position: relative;
+            width: 90px;
+            flex-shrink: 0;
+        }
+
+        .country-code-wrapper span {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .country-code-wrapper input {
+            padding-left: 28px !important;
+        }
+
+        .qr-wrapper {
+            margin-top: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #qrcode {
+            background: white;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: inline-block;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #qrcode img, #qrcode canvas {
+            display: block;
+            margin: 0 auto;
+        }
+
+        .download-btn {
+            background-color: #4f46e5;
+            text-decoration: none;
+            color: white;
+            display: inline-block;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .download-btn:hover {
+            background-color: #504d94;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="home">
+            <button onclick="window.location.href='../index.html'">Regresar</button>
+        </div>
+        <h1>Generador QR de Contactos</h1>
+        <p class="subtitle">Escribe los datos para ver la vista previa en tiempo real.</p>
+
+        <div class="form-group">
+            <label for="name">Nombre del Contacto:</label>
+            <input type="text" id="name" placeholder="Nombre">
+        </div>
+
+        <div class="form-group">
+            <label for="org">Empresa / Organización (Opcional):</label>
+            <input type="text" id="org" placeholder="Ej. Mi Empresa">
+        </div>
+
+        <div class="form-group">
+            <label for="phone">Número Telefónico:</label>
+            <div class="phone-input-group">
+                <div class="country-code-wrapper">
+                    <span>+</span>
+                    <input type="tel" id="countryCode" value="52" maxlength="4">
+                </div>
+                <input type="tel" id="phone" placeholder="Ej. 5512345678">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="email">Correo Electrónico (Opcional):</label>
+            <input type="email" id="email" placeholder="Ej. micorreo@correo.com">
+        </div>
+
+        <div class="qr-wrapper" id="qrWrapper">
+            <div id="qrcode"></div>
+            <a id="downloadBtn" class="download-btn" style="display:none;">Descargar Código QR</a>
+        </div>
+    </div>
+
+    <script>
+        const nameInput = document.getElementById('name');
+        const orgInput = document.getElementById('org');
+        const countryCodeInput = document.getElementById('countryCode');
+        const phoneInput = document.getElementById('phone');
+        const emailInput = document.getElementById('email');
+        const qrcodeContainer = document.getElementById('qrcode');
+        const downloadBtn = document.getElementById('downloadBtn');
+
+        let qrCodeInstance = null;
+
+        function updateQR() {
+            const name = nameInput.value.trim() || "Contacto";
+            const org = orgInput.value.trim();
+            const countryCode = countryCodeInput.value.trim();
+            const phone = phoneInput.value.trim();
+            const email = emailInput.value.trim();
+            
+            const fullPhone = phone ? `+${countryCode}${phone}` : '';
+
+            
+            let vCardData = `BEGIN:VCARD\nVERSION:3.0\nFN:${name}`;
+            if (org) vCardData += `\nORG:${org}`;
+            if (fullPhone) vCardData += `\nTEL:${fullPhone}`;
+            if (email) vCardData += `\nEMAIL:${email}`;
+            vCardData += `\nEND:VCARD`;
+
+            qrcodeContainer.innerHTML = "";
+            qrCodeInstance = new QRCode(qrcodeContainer, {
+                text: vCardData,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            setTimeout(() => {
+                const qrCanvasOrImg = qrcodeContainer.querySelector('canvas') || qrcodeContainer.querySelector('img');
+                if (qrCanvasOrImg && phone) {
+                    
+                    
+                    const exportCanvas = document.createElement('canvas');
+                    const ctx = exportCanvas.getContext('2d');
+                    
+                    
+                    const margin = 40; 
+                    const qrSize = 200; 
+
+                    exportCanvas.width = qrSize + (margin * 2);
+                    exportCanvas.height = qrSize + (margin * 2);
+
+                    
+                    ctx.fillStyle = "#ffffff";
+                    ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height);
+
+                    if (qrCanvasOrImg.tagName === 'CANVAS') {
+                        ctx.drawImage(qrCanvasOrImg, margin, margin);
+                    } else {
+                    
+                        const img = new Image();
+                        img.src = qrCanvasOrImg.src;
+                        img.onload = () => {
+                            ctx.drawImage(img, margin, margin, qrSize, qrSize);
+                            downloadBtn.href = exportCanvas.toDataURL("image/png");
+                        };
+                    }
+
+                    
+                    downloadBtn.href = exportCanvas.toDataURL("image/png");
+                    downloadBtn.download = `QR_${name.replace(/\s+/g, '_')}.png`;
+                    downloadBtn.style.display = 'inline-block';
+                } else {
+                    downloadBtn.style.display = 'none';
+                }
+            }, 100);
+        }
+
+        
+        nameInput.addEventListener('input', updateQR);
+        orgInput.addEventListener('input', updateQR);
+        countryCodeInput.addEventListener('input', updateQR);
+        phoneInput.addEventListener('input', updateQR);
+        emailInput.addEventListener('input', updateQR);
+
+        updateQR();
+    </script>
+</body>
+</html>
