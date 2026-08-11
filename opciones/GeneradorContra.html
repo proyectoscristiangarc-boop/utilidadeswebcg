@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Contraseñas</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --border: #334155;
+            --success: #22c55e;
+            --gray: #64748b;
+            --gray-hover: #475569;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 450px;
+            border: 1px solid var(--border);
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            color: #e2e8f0;
+        }
+
+        .menu-btn {
+            background-color: var(--gray);
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .menu-btn:hover {
+            background-color: var(--gray-hover);
+        }
+
+        .result-container {
+            display: flex;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        #result {
+            background: transparent;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            padding: 12px;
+            width: 100%;
+            outline: none;
+            word-break: break-all;
+        }
+
+        #copy-btn {
+            background-color: var(--primary);
+            border: none;
+            color: white;
+            padding: 0 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        #copy-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .setting {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            font-size: 0.95rem;
+        }
+
+        .setting input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .setting input[type="range"] {
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .text-input-group {
+            margin-bottom: 16px;
+        }
+
+        .text-input-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: #cbd5e1;
+        }
+
+        .text-input-group input[type="text"],
+        .text-input-group select {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-color);
+            outline: none;
+        }
+
+        .text-input-group input[type="text"]:focus,
+        .text-input-group select:focus {
+            border-color: var(--primary);
+        }
+
+        #generate {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+
+        #generate:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .copied-alert {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--success);
+            height: 20px;
+            margin-top: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-top">
+            <h2>Generador</h2>
+            <a href="../index.html" id="main-menu-btn" class="menu-btn">← Menú Principal</a>
+        </div>
+
+        
+        <div class="result-container">
+            <input type="text" id="result" readonly placeholder="Tu contraseña aquí">
+            <button id="copy-btn">Copiar</button>
+        </div>
+
+    
+        <div class="setting">
+            <label for="length">Longitud aleatoria: <span id="length-val">12</span></label>
+            <input type="range" id="length" min="4" max="30" value="12">
+        </div>
+
+        <div class="setting">
+            <label for="uppercase">Incluir Mayúsculas (A-Z)</label>
+            <input type="checkbox" id="uppercase" checked>
+        </div>
+        <div class="setting">
+            <label for="lowercase">Incluir Minúsculas (a-z)</label>
+            <input type="checkbox" id="lowercase" checked>
+        </div>
+        <div class="setting">
+            <label for="numbers">Incluir Números (0-9)</label>
+            <input type="checkbox" id="numbers" checked>
+        </div>
+        <div class="setting">
+            <label for="symbols">Incluir Caracteres (!@#$)</label>
+            <input type="checkbox" id="symbols" checked>
+        </div>
+
+        <hr style="border: 0; border-top: 1px solid var(--border); margin: 16px 0;">
+
+    
+        <div class="text-input-group">
+            <label for="custom-text">Texto personalizado (opcional):</label>
+            <input type="text" id="custom-text" placeholder="Ej: MiClave">
+        </div>
+
+        <div class="text-input-group">
+            <label for="position">Posición del texto personalizado:</label>
+            <select id="position">
+                <option value="start">Al principio</option>
+                <option value="end">Al final</option>
+            </select>
+        </div>
+
+        <button id="generate">Generar Contraseña</button>
+        <div id="alert" class="copied-alert">¡Contraseña copiada al portapapeles!</div>
+    </div>
+
+    <script>
+        const resultEl = document.getElementById('result');
+        const lengthEl = document.getElementById('length');
+        const lengthVal = document.getElementById('length-val');
+        const uppercaseEl = document.getElementById('uppercase');
+        const lowercaseEl = document.getElementById('lowercase');
+        const numbersEl = document.getElementById('numbers');
+        const symbolsEl = document.getElementById('symbols');
+        const customTextEl = document.getElementById('custom-text');
+        const positionEl = document.getElementById('position');
+        const generateBtn = document.getElementById('generate');
+        const copyBtn = document.getElementById('copy-btn');
+        const alertEl = document.getElementById('alert');
+        const mainMenuBtn = document.getElementById('main-menu-btn');
+
+        const randomFunc = {
+            lower: getRandomLower,
+            upper: getRandomUpper,
+            number: getRandomNumber,
+            symbol: getRandomSymbol
+        };
+
+        lengthEl.addEventListener('input', () => {
+            lengthVal.innerText = lengthEl.value;
+        });
+
+        generateBtn.addEventListener('click', () => {
+            const length = +lengthEl.value;
+            const hasLower = lowercaseEl.checked;
+            const hasUpper = uppercaseEl.checked;
+            const hasNumber = numbersEl.checked;
+            const hasSymbol = symbolsEl.checked;
+            const customText = customTextEl.value;
+            const position = positionEl.value;
+
+            resultEl.value = generatePassword(hasLower, hasUpper, hasNumber, hasSymbol, length, customText, position);
+        });
+
+        function generatePassword(lower, upper, number, symbol, length, customText, position) {
+            let generatedPassword = '';
+            const typesCount = lower + upper + number + symbol;
+            const typesArr = [{lower}, {upper}, {number}, {symbol}].filter(item => Object.values(item)[0]);
+
+            if (typesCount === 0) {
+                return '';
+            }
+
+            for (let i = 0; i < length; i++) {
+                const funcName = Object.keys(typesArr[Math.floor(Math.random() * typesArr.length)])[0];
+                generatedPassword += randomFunc[funcName]();
+            }
+
+            if (customText !== '') {
+                if (position === 'start') {
+                    generatedPassword = customText + generatedPassword;
+                } else {
+                    generatedPassword = generatedPassword + customText;
+                }
+            }
+
+            return generatedPassword;
+        }
+
+        // Copiar al portapapeles
+        copyBtn.addEventListener('click', () => {
+            const password = resultEl.value;
+            if (!password) return;
+
+            navigator.clipboard.writeText(password);
+            alertEl.style.opacity = '1';
+            setTimeout(() => {
+                alertEl.style.opacity = '0';
+            }, 2000);
+        });
+
+    
+        function getRandomLower() {
+            return String.fromCharCode(Math.floor(Math.random() * 26) + 97);
+        }
+
+        function getRandomUpper() {
+            return String.fromCharCode(Math.floor(Math.random() * 26) + 65);
+        }
+
+        function getRandomNumber() {
+            return String.fromCharCode(Math.floor(Math.random() * 10) + 48);
+        }
+
+        function getRandomSymbol() {
+            const symbols = '!@#$%^&*(){}[]=<>/,.';
+            return symbols[Math.floor(Math.random() * symbols.length)];
+        }
+
+        generateBtn.click();
+    </script>
+</body>
+</html>
