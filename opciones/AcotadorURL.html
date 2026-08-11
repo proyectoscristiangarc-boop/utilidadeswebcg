@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -66,8 +65,8 @@
             font-weight: 600;
             color: white;
             cursor: pointer;
-            border: 1px solid transparent;
-            background-color: rgba(6, 22, 46, 0.7);
+            border:none;
+            background-color: transparent;
         }
 
         .header h1 {
@@ -143,7 +142,7 @@
             display: flex;
         }
 
-        .result-label {
+        .result-container .result-label {
             font-size: 0.85rem;
             color: black;
             font-weight: 600;
@@ -151,12 +150,12 @@
             letter-spacing: 0.5px;
         }
 
-        .result-box {
+        .result-container .result-box {
             display: flex;
             gap: 10px;
         }
 
-        .result-input {
+        .result-container .result-input {
             flex: 1;
             padding: 10px 14px;
             background: white;
@@ -168,15 +167,76 @@
             outline: none;
         }
 
-        .btn-copy {
+        .result-container .btn-copy {
             padding: 10px 18px;
-            background-color: var(--primary-color);
             font-size: 0.9rem;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: var(--radius);
         }
 
-        .btn-copy:hover {
+        .result-container .btn-copy:hover {
             background-color: #334155;
         }
+
+        @media (max-width: 768px) {
+        .result-container {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            display: block;
+        }
+
+        .result-container.active {
+            display: flex;
+        }
+
+        .result-container .result-label {
+            font-size: 0.85rem;
+            color: black;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-container .result-box {
+            display: block;
+        }
+
+        .result-container .result-input {
+            padding: 10px 0px;
+            background: white;
+            text-indent: 5%;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: rgb(13, 13, 68);
+            font-weight: 500;
+        }
+
+        .result-container .btn-copy {
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            background-color: var(--primary-color);
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            margin-top: 5%;
+            border-radius: var(--radius);
+        }
+
+        .result-container .btn-copy:hover {
+            background-color: #334155;
+        }
+
+        }
+        
 
     </style>
 </head>
@@ -185,7 +245,7 @@
     <div class="container">
         <div class="header">
             <div class="home">
-            <button onclick="window.location.href='../index.html'">Regresar</button>
+            <button onclick="window.location.href='../index.html'">-- Regresar</button>
             </div>
             <h1>Acortador de URL</h1>
             <p>Transforma tus enlaces largos en URLs cortas y fáciles de compartir.</p>
@@ -198,7 +258,7 @@
             <button id="shortenBtn" onclick="generarUrlCorto()">Acortar Enlace</button>
         </div>
 
-        <!-- Contenedor del resultado simulado -->
+        
         <div class="result-container" id="resultContainer">
             <span class="result-label">Tu enlace acortado:</span>
             <div class="result-box">
@@ -219,18 +279,16 @@
                 return;
             }
 
-            // Simulación de generación de URL corta (en un entorno real, aquí conectarías una API como TinyURL o Bitly)
             const randomCode = Math.random().toString(36).substring(2, 8);
             shortUrlInput.value = `https://sho.rt/${randomCode}`;
 
-            // Mostrar el contenedor de resultados
             resultContainer.classList.add('active');
         }
 
         function copiarAlPortapapeles() {
             const shortUrlInput = document.getElementById('shortUrl');
             shortUrlInput.select();
-            shortUrlInput.setSelectionRange(0, 99999); // Para dispositivos móviles
+            shortUrlInput.setSelectionRange(0, 99999);
             
             navigator.clipboard.writeText(shortUrlInput.value).then(() => {
                 const copyBtn = document.querySelector('.btn-copy');
