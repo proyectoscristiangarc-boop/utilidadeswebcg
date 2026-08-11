@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Enlaces de WhatsApp</title>
+    <style>
+        :root {
+            --primary-color: #25d366;
+            --primary-hover: #1ebe5d;
+            --bg-color: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --border-color: #cccccc;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            user-select: none;
+        }
+
+        .wa-generator-card {
+            background: rgba(30, 41, 59, 0.7);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 450px;
+            box-sizing: border-box;
+        }
+
+        .wa-generator-card .home {
+            width: 100%;
+            height: 5vh;
+            display: flex;
+            justify-content: left;
+            align-items: center;
+        }
+
+        .home button{
+            width: auto;
+            height: 100%;
+            padding: 2%;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 3%;
+            cursor: pointer;
+            border: 1px solid transparent;
+            background-color: rgba(6, 22, 46, 0.7);
+        }
+
+
+        .wa-generator-card h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            color: white;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #afb6c0;
+        }
+
+        .phone-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .phone-input-container select {
+            flex: 0 0 110px;
+        }
+
+        .phone-input-container input {
+            flex: 1;
+        }
+
+        input[type="text"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus,
+        select:focus,
+        textarea:focus {
+            border-color: var(--primary-color);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .btn-generate {
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-top: 10px;
+        }
+
+        .btn-generate:hover {
+            background-color: #403cc5;
+        }
+
+        .result-container {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eeeeee;
+        }
+
+        .result-container label{
+            color: #afb6c0;
+            font-weight: 600;
+        }
+
+        .result-box {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .result-box input {
+            background-color: #f9f9f9;
+            color: #666;
+        }
+
+        .btn-copy {
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            padding: 0 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .btn-copy:hover {
+            background-color: #403cc5;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="wa-generator-card">
+        <div class="home">
+            <button onclick="window.location.href='../index.html'">Regresar</button>
+        </div>
+        <h2>Generador de WhatsApp</h2>
+        
+        <div class="form-group">
+            <label>Número de Teléfono</label>
+            <div class="phone-input-container">
+              
+                <select id="countryCode">
+                    <option value="54">🇦🇷 +54</option>
+                    <option value="591">🇧🇴 +591</option>
+                    <option value="55">🇧🇷 +55</option>
+                    <option value="56">🇨🇱 +56</option>
+                    <option value="57">🇨🇴 +57</option>
+                    <option value="506">🇨🇷 +506</option>
+                    <option value="53">🇨🇺 +53</option>
+                    <option value="593">🇪🇨 +593</option>
+                    <option value="503" selected>🇸🇻 +503</option>
+                    <option value="34">🇪🇸 +34</option>
+                    <option value="1">🇺🇸 +1</option>
+                    <option value="52">🇲🇽 +52</option>
+                    <option value="505">🇳🇮 +505</option>
+                    <option value="507">🇵🇦 +507</option>
+                    <option value="595">🇵🇾 +595</option>
+                    <option value="51">🇵🇪 +51</option>
+                    <option value="1">🇩🇴 +1</option>
+                    <option value="598">🇺🇾 +598</option>
+                    <option value="58">🇻🇪 +58</option>
+                </select>
+                
+                <input type="text" id="phoneNumber" placeholder="Ej: 71234567">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="message">Mensaje Personalizado (Opcional)</label>
+            <textarea id="message" placeholder="Escribe un mensaje predeterminado..."></textarea>
+        </div>
+
+        <button class="btn-generate" onclick="generateLink()">Crear Enlace</button>
+
+        <div class="result-container">
+            <label>Enlace Generado:</label>
+            <div class="result-box">
+                <input type="text" id="resultLink" readonly placeholder="Tu enlace aparecerá aquí">
+                <button class="btn-copy" onclick="copyLink()">Copiar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generateLink() {
+            const countryCode = document.getElementById('countryCode').value;
+            const phoneNumber = document.getElementById('phoneNumber').value.trim();
+            const message = document.getElementById('message').value.trim();
+
+            if (!phoneNumber) {
+                alert('Por favor ingresa un número de teléfono.');
+                return;
+            }
+
+            let url = `https://wa.me/${countryCode}${phoneNumber}`;
+
+            if (message) {
+                url += `?text=${encodeURIComponent(message)}`;
+            }
+
+            document.getElementById('resultLink').value = url;
+        }
+
+        function copyLink() {
+            const resultInput = document.getElementById('resultLink');
+            if (!resultInput.value) return;
+            
+            resultInput.select();
+            document.execCommand('copy');
+            alert('¡Enlace copiado al portapapeles!');
+        }
+    </script>
+
+</body>
+</html>
