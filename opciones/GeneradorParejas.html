@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Parejas Mixtas</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg: #0f172a;
+            --text: #f8fafc;
+            --error-bg: #fee2e2;
+            --error-text: #991b1b;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg); 
+            padding: 20px; 
+            display: flex; 
+            justify-content: center; 
+            min-height: 100vh;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
+        .card { 
+            background: #1e293b; 
+            padding: 2rem; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+            width: 100%; 
+            max-width: 500px; 
+        }
+        
+        .btn-menu-top {
+            background: #64748b;
+            color: #f8fafc;
+            border: none;
+            font-size: 0.85rem;
+            padding: 1%;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 15px;
+            transition: color 0.2s;
+        }
+
+        .btn-menu-top:hover {
+            color: #f8fafc;
+        }
+
+        h1 { 
+            font-size: 1.25rem; 
+            text-align: center; 
+            margin-bottom: 1.5rem; 
+            color: var(--text); 
+        }
+
+        .input-box { 
+            margin-bottom: 1rem; 
+        }
+
+        label { 
+            display: block; 
+            margin-bottom: 0.5rem; 
+            font-weight: bold; 
+            color: var(--text); 
+        }
+
+        textarea { 
+            width: 100%; 
+            height: 100px; 
+            background-color: var(--bg);
+            color: white;
+            font-size: 1rem;
+            border: 1px solid var(--bg);
+            border-radius: 8px;
+            padding: 10px; 
+            box-sizing: border-box; 
+            resize: vertical; 
+            font-family: inherit;
+        }
+
+        button.btn-main { 
+            width: 100%; 
+            padding: 12px; 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            border-radius: 6px; 
+            cursor: pointer; 
+            font-size: 1rem; 
+            margin-top: 10px; 
+            transition: background 0.3s;
+        }
+
+        button.btn-main:hover { 
+            background: var(--primary-hover); 
+        }
+        
+        .alert-label {
+            display: none;
+            margin-top: 12px;
+            padding: 10px 14px;
+            background-color: var(--error-bg);
+            color: var(--error-text);
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        h3{
+            color: white;
+        }
+
+        .results { 
+            margin-top: 20px; 
+            padding: 15px; 
+            background: #0f172a; 
+            border-radius: 8px; 
+            border-left: 4px solid var(--primary); 
+        }
+        .couple-item { margin: 6px 0; font-size: 1rem; color: var(--text); }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <button class="btn-menu-top" onclick="window.location.href='../index.html'">
+        ← Menu principal
+    </button>
+
+    <h1>Generador de Parejas</h1>
+    
+    <div class="input-box">
+        <label>Grupo A (Nombres separados por comas):</label>
+        <textarea id="grupoA" placeholder="Ej: Ana, Pedro, Luis"></textarea>
+    </div>
+    
+    <div class="input-box">
+        <label>Grupo B (Nombres separados por comas):</label>
+        <textarea id="grupoB" placeholder="Ej: Maria, Juan, Elena"></textarea>
+    </div>
+    
+    <button class="btn-main" onclick="generarParejas()">Mezclar Parejas</button>
+    
+    <div id="alertLabel" class="alert-label"></div>
+
+    <div id="resultado" class="results" style="display:none;"></div>
+</div>
+
+<script>
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function mostrarAlerta(mensaje) {
+        const alertLabel = document.getElementById('alertLabel');
+        const resDiv = document.getElementById('resultado');
+        
+        resDiv.style.display = 'none';
+
+        if (mensaje) {
+            alertLabel.textContent = mensaje;
+            alertLabel.style.display = 'block';
+        } else {
+            alertLabel.textContent = '';
+            alertLabel.style.display = 'none';
+        }
+    }
+
+    function generarParejas() {
+        const listaA = document.getElementById('grupoA').value.split(',').map(s => s.trim()).filter(s => s !== "");
+        const listaB = document.getElementById('grupoB').value.split(',').map(s => s.trim()).filter(s => s !== "");
+    
+
+        if (listaA.length === 0 && listaB.length === 0) {
+            mostrarAlerta("Por favor ingresa datos en ambos grupos.");
+            return;
+        }
+        if (listaA.length === 0) {
+            mostrarAlerta("El Grupo A está vacío.");
+            return;
+        }
+        if (listaB.length === 0) {
+            mostrarAlerta("El Grupo B está vacío.");
+            return;
+        }
+
+        mostrarAlerta("");
+
+
+        const shuffledA = shuffle([...listaA]);
+        const shuffledB = shuffle([...listaB]);
+        
+        let resultadoHTML = "<h3>Parejas Generadas:</h3>";
+        const maxLen = Math.max(shuffledA.length, shuffledB.length);
+        
+        for (let i = 0; i < maxLen; i++) {
+            const p1 = shuffledA[i] || "(Sin pareja)";
+            const p2 = shuffledB[i] || "(Sin pareja)";
+            resultadoHTML += `<div class="couple-item"><b>${p1}</b> ← <b>${p2}</b></div>`;
+        }
+        
+        const resDiv = document.getElementById('resultado');
+        resDiv.innerHTML = resultadoHTML;
+        resDiv.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
