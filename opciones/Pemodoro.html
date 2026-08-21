@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro con Ruleta de Tareas</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f8fafc;
+            --accent: #10b981;
+            --error: #ef4444;
+            --border: #334155;
+            --secondary-btn: #475569;
+            --secondary-btn-hover: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem 1rem;
+            position: relative;
+        }
+
+       
+        .btn-regresar {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            background-color: var(--border);
+            color: var(--text);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            text-decoration: none;
+            transition: background-color 0.2s, transform 0.1s;
+            z-index: 100;
+        }
+
+        .btn-regresar:hover {
+            background-color: #475569;
+        }
+
+        .btn-regresar:active {
+            transform: scale(0.98);
+        }
+
+        .header-container {
+            text-align: center;
+            max-width: 700px;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            color: #cbd5e1;
+            margin-bottom: 0.5rem;
+        }
+
+        .intro-text {
+            font-size: 0.95rem;
+            color: #94a3b8;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem 0.5rem;
+            }
+            .main-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .btn-regresar {
+                position: static;
+                margin-bottom: 0.5rem;
+                align-self: flex-start;
+            }
+            .header-container {
+                margin-top: 0.5rem;
+            }
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            border: 1px solid var(--border);
+        }
+
+        h2 {
+            font-size: 1.25rem;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 110px;
+            background-color: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            color: var(--text);
+            padding: 0.75rem;
+            resize: vertical;
+            font-size: 1rem;
+        }
+
+        textarea:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .config-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            background-color: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            color: var(--text);
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            flex: 1;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-success {
+            background-color: var(--primary);
+        }
+        .btn-success:hover {
+            background-color: #4f46e5;
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-btn);
+        }
+        .btn-secondary:hover {
+            background-color: var(--secondary-btn-hover);
+        }
+
+        .btn-danger {
+            background-color: var(--error);
+        }
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .alert-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            min-height: 1.2rem;
+            transition: color 0.2s;
+        }
+
+        .alert-error {
+            color: var(--error);
+        }
+
+        .alert-success {
+            color: var(--accent);
+        }
+
+        
+        .pomodoro-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 1.2rem;
+        }
+
+        .task-selected-box {
+            background-color: var(--bg);
+            border: 1px solid var(--border);
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            width: 100%;
+        }
+
+        .task-selected-title {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-bottom: 0.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .task-selected-name {
+            font-size: 1.1rem;
+            color: #38bdf8;
+            font-weight: bold;
+        }
+
+        .timer-display {
+            font-size: 3.8rem;
+            font-weight: bold;
+            font-family: monospace;
+            color: #f8fafc;
+            letter-spacing: 2px;
+            margin: 0.2rem 0;
+        }
+
+        .timer-controls {
+            display: flex;
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        .btn-silenciar {
+            background-color: #f59e0b;
+            color: #0f172a;
+            font-weight: bold;
+            display: none;
+            width: 100%;
+        }
+        .btn-silenciar:hover {
+            background-color: #d97706;
+        }
+    </style>
+</head>
+<body>
+
+    <a href="../index.html" class="btn-regresar">
+        ← Menú Principal
+    </a>
+
+    <div class="header-container">
+        <h1>Pomodoro con Ruleta de Tareas</h1>
+        <p class="intro-text">
+            Personaliza tu tiempo de enfoque, deja que la ruleta elija tu tarea y concéntrate sin distracciones.
+        </p>
+    </div>
+
+    <div class="main-container">
+        <div class="card">
+            <h2>1. Configuración</h2>
+            
+            <div class="config-group">
+                <label for="inputTareas">Tareas (separadas por comas o saltos de línea):</label>
+                <textarea id="inputTareas" placeholder="Ej: Estudiar matemáticas, Responder correos..."></textarea>
+            </div>
+
+            <div class="config-group">
+                <label for="inputMinutos">Duración del enfoque (minutos):</label>
+                <!-- Campo de minutos vacío al inicio -->
+                <input type="number" id="inputMinutos" min="1" max="180" placeholder="Ej: 25">
+            </div>
+
+            <div id="alertLabel" class="alert-label"></div>
+
+            <div class="btn-container">
+                <button class="btn btn-success" onclick="elegirTareaAzar()">🎯 Elegir Tarea</button>
+                <button class="btn btn-secondary" onclick="limpiarTodo()">🧹 Limpiar</button>
+            </div>
+        </div>
+
+
+        <div class="card pomodoro-section">
+            <h2>2. Modo Enfoque</h2>
+            
+            <div class="task-selected-box">
+                <div class="task-selected-title">Tarea en curso</div>
+                <div class="task-selected-name" id="tareaActiva">Ninguna seleccionada</div>
+            </div>
+
+            <div class="timer-display" id="timerDisplay">00:00</div>
+
+            <button class="btn btn-silenciar" id="btnSilenciarAlarma" onclick="detenerAlarmaSonora()">Detener Alarma</button>
+
+            <div class="timer-controls">
+                <button class="btn" id="btnPausar" onclick="alternarPausa()" disabled>Pausar</button>
+                <button class="btn btn-danger" id="btnReiniciar" onclick="reiniciarPomodoro()" disabled>Reiniciar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tiempoRestante = 0; 
+        let intervalo = null;
+        let estaPausado = false;
+        let enCurso = false;
+        let audioAlarma = null;
+
+        document.getElementById('inputMinutos').addEventListener('input', actualizarTiempoDesdeInput);
+
+        function mostrarAlerta(mensaje, esError = true) {
+            const label = document.getElementById('alertLabel');
+            label.textContent = mensaje;
+            label.className = `alert-label ${esError ? 'alert-error' : 'alert-success'}`;
+        }
+
+        function actualizarTiempoDesdeInput() {
+            if (enCurso) return; 
+            const minInput = parseInt(document.getElementById('inputMinutos').value);
+            if (!isNaN(minInput) && minInput > 0) {
+                tiempoRestante = minInput * 60;
+                actualizarDisplayTimer();
+            } else {
+                tiempoRestante = 0;
+                actualizarDisplayTimer();
+            }
+        }
+
+        function limpiarTodo() {
+            detenerPomodoro();
+            detenerAlarmaSonora();
+            document.getElementById('inputTareas').value = '';
+            document.getElementById('inputMinutos').value = '';
+            document.getElementById('alertLabel').textContent = '';
+            document.getElementById('tareaActiva').textContent = 'Ninguna seleccionada';
+            tiempoRestante = 0;
+            actualizarDisplayTimer();
+            document.getElementById('btnPausar').disabled = true;
+            document.getElementById('btnReiniciar').disabled = true;
+        }
+
+        function elegirTareaAzar() {
+            detenerAlarmaSonora();
+            const texto = document.getElementById('inputTareas').value;
+            const tareas = texto.split(/[\n,]+/).map(t => t.trim()).filter(t => t.length > 0);
+            const minInput = parseInt(document.getElementById('inputMinutos').value);
+
+            if (tareas.length === 0) {
+                mostrarAlerta("Por favor ingresa al menos una tarea.", true);
+                return;
+            }
+
+            if (isNaN(minInput) || minInput <= 0) {
+                mostrarAlerta("Por favor ingresa un tiempo válido en minutos mayor a 0.", true);
+                return;
+            }
+
+            mostrarAlerta("¡Tarea elegida con éxito!", false);
+
+            const tareaAleatoria = tareas[Math.floor(Math.random() * tareas.length)];
+            document.getElementById('tareaActiva').textContent = tareaAleatoria;
+
+            tiempoRestante = minInput * 60;
+            iniciarPomodoro();
+        }
+
+        function iniciarPomodoro() {
+            detenerPomodoro();
+            enCurso = true;
+            estaPausado = false;
+            
+            document.getElementById('btnPausar').disabled = false;
+            document.getElementById('btnPausar').textContent = 'Pausar';
+            document.getElementById('btnPausar').style.backgroundColor = 'var(--primary)';
+            document.getElementById('btnReiniciar').disabled = false;
+
+            actualizarDisplayTimer();
+
+            intervalo = setInterval(() => {
+                if (!estaPausado) {
+                    if (tiempoRestante > 0) {
+                        tiempoRestante--;
+                        actualizarDisplayTimer();
+                    } else {
+                        detenerPomodoro();
+                        reproducirAlarmaSonora();
+                        mostrarAlerta("¡Tiempo cumplido! Gran trabajo.", false);
+                        document.getElementById('tareaActiva').textContent = '¡Completada!';
+                    }
+                }
+            }, 1000);
+        }
+
+        function detenerPomodoro() {
+            if (intervalo) {
+                clearInterval(intervalo);
+                intervalo = null;
+            }
+            enCurso = false;
+        }
+
+        function alternarPausa() {
+            if (!enCurso && !estaPausado) return;
+
+            estaPausado = !estaPausado;
+            const btnPausar = document.getElementById('btnPausar');
+            if (estaPausado) {
+                btnPausar.textContent = 'Reanudar';
+                btnPausar.style.backgroundColor = 'var(--accent)';
+            } else {
+                btnPausar.textContent = 'Pausar';
+                btnPausar.style.backgroundColor = 'var(--primary)';
+            }
+        }
+
+        function reiniciarPomodoro() {
+            detenerAlarmaSonora();
+            detenerPomodoro();
+            const minInput = parseInt(document.getElementById('inputMinutos').value);
+            if (isNaN(minInput) || minInput <= 0) {
+                mostrarAlerta(" Ingresa un tiempo válido antes de reiniciar.", true);
+                return;
+            }
+            tiempoRestante = minInput * 60;
+            estaPausado = false;
+            document.getElementById('btnPausar').textContent = 'Pausar';
+            document.getElementById('btnPausar').style.backgroundColor = 'var(--primary)';
+            actualizarDisplayTimer();
+            iniciarPomodoro();
+        }
+
+        function actualizarDisplayTimer() {
+            const minutos = Math.floor(tiempoRestante / 60);
+            const segundos = tiempoRestante % 60;
+            const formato = `${minutos.toString().padStart(2, '0')}:${segundos.toString().padStart(2, '0')}`;
+            document.getElementById('timerDisplay').textContent = formato;
+        }
+
+        function reproducirAlarmaSonora() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                audioAlarma = setInterval(() => {
+                    if (audioCtx.state === 'suspended') {
+                        audioCtx.resume();
+                    }
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(587.33, audioCtx.currentTime); 
+                    
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.5);
+                    
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.5);
+                }, 800);
+
+                document.getElementById('btnSilenciarAlarma').style.display = 'block';
+            } catch (e) {
+                console.log("Audio no soportado automáticamente por el navegador.");
+            }
+        }
+
+        function detenerAlarmaSonora() {
+            if (audioAlarma) {
+                clearInterval(audioAlarma);
+                audioAlarma = null;
+            }
+            document.getElementById('btnSilenciarAlarma').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
