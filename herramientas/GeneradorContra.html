@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Generador de Contraseñas Seguras</title>
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --success-color: #16a34a;
+            --danger-color: #dc2626;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --border-color: #cbd5e1;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        .top-navbar {
+            background: var(--primary-color);
+            color: #ffffff;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-menu {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-menu:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ffffff;
+        }
+
+        .navbar-title {
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .main-content {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                padding: 30px 20px;
+                gap: 24px;
+            }
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            line-height: 1.2;
+        }
+
+        @media (min-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        .grid-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+
+        @media (min-width: 900px) {
+            .grid-layout {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 24px;
+                align-items: start;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        @media (min-width: 600px) {
+            .card {
+                padding: 24px;
+            }
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 8px;
+        }
+
+        .form-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .input-group input[type="range"], .input-group input[type="text"], .input-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            background-color: #f8fafc;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-group input[type="range"] {
+            accent-color: var(--accent-color);
+            padding: 0;
+            margin-top: 5px;
+        }
+
+        .input-group input[type="text"]:focus, .input-group select:focus {
+            border-color: var(--accent-color);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            user-select: none;
+        }
+
+        .checkbox-group input {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-color);
+            cursor: pointer;
+        }
+
+        .btn-action {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .btn-action:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .preview-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 24px 16px;
+            background: #f8fafc;
+            border: 1px dashed var(--border-color);
+            border-radius: var(--radius);
+            min-height: 320px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .password-display-box {
+            width: 100%;
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        }
+
+        #passwordOutput {
+            font-family: monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+            word-break: break-all;
+            color: var(--primary-color);
+            text-align: center;
+            padding: 6px 0;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-copy {
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            padding: 10px 16px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-copy:hover {
+            background: var(--border-color);
+        }
+
+        .strength-indicator {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .strength-bar-container {
+            width: 100%;
+            height: 8px;
+            background: var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .strength-bar {
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s, background-color 0.3s;
+        }
+
+        .strength-text {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-navbar">
+        <a href="../index.html" class="btn-menu" id="btnMenuPrincipal">
+            <span>←</span> Menú Principal
+        </a>
+        <span class="navbar-title">CG</span>
+    </header>
+
+    <main class="main-content">
+        <header>
+            <h1>Generador de Contraseñas Seguras</h1>
+        </header>
+
+        <div class="grid-layout">
+            <section class="card">
+                <h2>Configuración de Seguridad</h2>
+                
+                <div class="input-group">
+                    <label for="lengthRange">
+                        <span>Longitud total aproximada:</span>
+                        <span id="lengthValue" style="color: var(--accent-color); font-weight: 700;">16</span>
+                    </label>
+                    <input type="range" id="lengthRange" min="6" max="64" value="16" oninput="actualizarLongitud()">
+                </div>
+
+                <div class="input-group" style="margin-top: 5px;">
+                    <label for="customText">Texto personalizado:</label>
+                    <input type="text" id="customText" placeholder="Ej. Texto adicional" oninput="generarPassword()">
+                </div>
+
+                <div class="input-group">
+                    <label for="textPosition">Posición del texto personalizado:</label>
+                    <select id="textPosition" onchange="generarPassword()">
+                        <option value="start">Al inicio (Adelante)</option>
+                        <option value="center">En el centro</option>
+                        <option value="end">Al final</option>
+                    </select>
+                </div>
+
+                <div class="form-grid" style="margin-top: 5px;">
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="chkUppercase" checked onchange="generarPassword()"> Incluir Mayúsculas (A-Z)
+                    </label>
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="chkLowercase" checked onchange="generarPassword()"> Incluir Minúsculas (a-z)
+                    </label>
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="chkNumbers" checked onchange="generarPassword()"> Incluir Números (0-9)
+                    </label>
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="chkSymbols" checked onchange="generarPassword()"> Incluir Símbolos (!@#$...)
+                    </label>
+                </div>
+
+                <button type="button" class="btn-action" onclick="generarPassword()" style="margin-top: 5px;">
+                    Generar Nueva Contraseña
+                </button>
+            </section>
+
+            <section class="card">
+                <h2>Resultado</h2>
+                <div class="preview-container">
+                    <div class="password-display-box">
+                        <span id="passwordOutput">Cargando...</span>
+                        <button type="button" class="btn-copy" onclick="copiarPassword()">Copiar</button>
+                    </div>
+
+                    <div class="strength-indicator">
+                        <div class="strength-bar-container">
+                            <div id="strengthBar" class="strength-bar"></div>
+                        </div>
+                        <div id="strengthText" class="strength-text">Nivel de seguridad</div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        const charsUppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const charsLowercase = "abcdefghijklmnopqrstuvwxyz";
+        const charsNumbers = "0123456789";
+        const charsSymbols = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+        function actualizarLongitud() {
+            const length = document.getElementById('lengthRange').value;
+            document.getElementById('lengthValue').textContent = length;
+            generarPassword();
+        }
+
+        function generarPassword() {
+            const targetLength = parseInt(document.getElementById('lengthRange').value);
+            const customText = document.getElementById('customText').value;
+            const position = document.getElementById('textPosition').value;
+
+            const useUpper = document.getElementById('chkUppercase').checked;
+            const useLower = document.getElementById('chkLowercase').checked;
+            const useNums = document.getElementById('chkNumbers').checked;
+            const useSyms = document.getElementById('chkSymbols').checked;
+
+            let validChars = "";
+            if (useUpper) validChars += charsUppercase;
+            if (useLower) validChars += charsLowercase;
+            if (useNums) validChars += charsNumbers;
+            if (useSyms) validChars += charsSymbols;
+
+            const output = document.getElementById('passwordOutput');
+
+            if (validChars === "") {
+                output.textContent = "Selecciona al menos una opción de caracteres";
+                evaluarSeguridad("");
+                return;
+            }
+
+            const customLen = customText.length;
+            let randomLen = targetLength - customLen;
+            if (randomLen < 4) randomLen = 4;
+
+            let randomPart = "";
+            for (let i = 0; i < randomLen; i++) {
+                const randomIndex = Math.floor(Math.random() * validChars.length);
+                randomPart += validChars[randomIndex];
+            }
+
+            let finalPassword = "";
+            if (customLen === 0) {
+                finalPassword = randomPart;
+            } else {
+                if (position === 'start') {
+                    finalPassword = customText + randomPart;
+                } else if (position === 'end') {
+                    finalPassword = randomPart + customText;
+                } else if (position === 'center') {
+                    const mid = Math.floor(randomPart.length / 2);
+                    finalPassword = randomPart.slice(0, mid) + customText + randomPart.slice(mid);
+                }
+            }
+
+            output.textContent = finalPassword;
+            evaluarSeguridad(finalPassword);
+        }
+
+        function evaluarSeguridad(pwd) {
+            const bar = document.getElementById('strengthBar');
+            const text = document.getElementById('strengthText');
+
+            if (!pwd || pwd.length < 6 || pwd.includes("Selecciona")) {
+                bar.style.width = "0%";
+                bar.style.backgroundColor = "var(--danger-color)";
+                text.textContent = "Inválida";
+                text.style.color = "var(--danger-color)";
+                return;
+            }
+
+            let score = 0;
+            if (pwd.length >= 12) score += 2;
+            else if (pwd.length >= 8) score += 1;
+
+            if (/[A-Z]/.test(pwd)) score += 1;
+            if (/[a-z]/.test(pwd)) score += 1;
+            if (/[0-9]/.test(pwd)) score += 1;
+            if (/[^A-Za-z0-9]/.test(pwd)) score += 1;
+
+            if (score <= 2) {
+                bar.style.width = "30%";
+                bar.style.backgroundColor = "var(--danger-color)";
+                text.textContent = "Débil";
+                text.style.color = "var(--danger-color)";
+            } else if (score <= 4) {
+                bar.style.width = "70%";
+                bar.style.backgroundColor = "#d97706";
+                text.textContent = "Media";
+                text.style.color = "#d97706";
+            } else {
+                bar.style.width = "100%";
+                bar.style.backgroundColor = "var(--success-color)";
+                text.textContent = "Fuerte";
+                text.style.color = "var(--success-color)";
+            }
+        }
+
+        function copiarPassword() {
+            const pwd = document.getElementById('passwordOutput').textContent;
+            if (!pwd || pwd.includes("Selecciona")) return;
+
+            navigator.clipboard.writeText(pwd).then(() => {
+                const btn = document.querySelector('.btn-copy');
+                const originalText = btn.textContent;
+                btn.textContent = "¡Copiado!";
+                btn.style.backgroundColor = "var(--success-color)";
+                btn.style.color = "white";
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.backgroundColor = "";
+                    btn.style.color = "";
+                }, 1500);
+            });
+        }
+
+        generarPassword();
+    </script>
+</body>
+</html>
