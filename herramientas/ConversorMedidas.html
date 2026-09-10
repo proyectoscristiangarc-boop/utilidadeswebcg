@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conversor de Medidas</title>
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --border-color: #cbd5e1;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-navbar {
+            background: var(--primary-color);
+            color: #ffffff;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .btn-menu {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-menu:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ffffff;
+        }
+
+        .navbar-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .tabs-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .converter-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            display: none;
+        }
+
+        .converter-card.active {
+            display: block;
+        }
+
+        .converter-card h2 {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .converter-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        .input-group input, .input-group select {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+            width: 100%;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--accent-color);
+        }
+
+        .equals-sign {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .converter-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .equals-sign {
+                margin: 0;
+                transform: rotate(90deg);
+            }
+
+            .top-navbar {
+                padding: 12px 15px;
+            }
+
+            .main-content {
+                padding: 20px 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-navbar">
+        <button class="btn-menu" onclick="regresarMenu()">
+            <span>←</span> Menú Principal
+        </button>
+        <span class="navbar-title">CG</span>
+    </header>
+
+    <main class="main-content">
+        <header>
+            <h1>Conversor de Medidas</h1>
+        </header>
+
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="cambiarTab('longitud', event)">Longitud</button>
+            <button class="tab-btn" onclick="cambiarTab('temperatura', event)">Temperatura</button>
+            <button class="tab-btn" onclick="cambiarTab('peso', event)">Peso / Masa</button>
+        </div>
+
+        <div id="longitud" class="converter-card active">
+            <h2>Conversión de Longitud</h2>
+            <div class="converter-grid">
+                <div class="input-group">
+                    <label>De:</label>
+                    <input type="number" id="valLongitud1" placeholder="0" oninput="convertirLongitud('1')">
+                    <select id="unidadLongitud1" onchange="convertirLongitud('1')">
+                        <option value="m">Metros (m)</option>
+                        <option value="km">Kilómetros (km)</option>
+                        <option value="cm">Centímetros (cm)</option>
+                        <option value="mm">Milímetros (mm)</option>
+                        <option value="mi">Millas (mi)</option>
+                        <option value="in">Pulgadas (in)</option>
+                        <option value="ft">Pies (ft)</option>
+                    </select>
+                </div>
+                <div class="equals-sign">=</div>
+                <div class="input-group">
+                    <label>A:</label>
+                    <input type="number" id="valLongitud2" placeholder="0" oninput="convertirLongitud('2')">
+                    <select id="unidadLongitud2" onchange="convertirLongitud('1')">
+                        <option value="km">Kilómetros (km)</option>
+                        <option value="m" selected>Metros (m)</option>
+                        <option value="cm">Centímetros (cm)</option>
+                        <option value="mm">Milímetros (mm)</option>
+                        <option value="mi">Millas (mi)</option>
+                        <option value="in">Pulgadas (in)</option>
+                        <option value="ft">Pies (ft)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Temperatura -->
+        <div id="temperatura" class="converter-card">
+            <h2>Conversión de Temperatura</h2>
+            <div class="converter-grid">
+                <div class="input-group">
+                    <label>De:</label>
+                    <input type="number" id="valTemp1" placeholder="0" oninput="convertirTemperatura('1')">
+                    <select id="unidadTemp1" onchange="convertirTemperatura('1')">
+                        <option value="C">Celsius (°C)</option>
+                        <option value="F">Fahrenheit (°F)</option>
+                        <option value="K">Kelvin (K)</option>
+                    </select>
+                </div>
+                <div class="equals-sign">=</div>
+                <div class="input-group">
+                    <label>A:</label>
+                    <input type="number" id="valTemp2" placeholder="0" oninput="convertirTemperatura('2')">
+                    <select id="unidadTemp2" onchange="convertirTemperatura('1')">
+                        <option value="C">Celsius (°C)</option>
+                        <option value="F" selected>Fahrenheit (°F)</option>
+                        <option value="K">Kelvin (K)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Peso -->
+        <div id="peso" class="converter-card">
+            <h2>Conversión de Peso / Masa</h2>
+            <div class="converter-grid">
+                <div class="input-group">
+                    <label>De:</label>
+                    <input type="number" id="valPeso1" placeholder="0" oninput="convertirPeso('1')">
+                    <select id="unidadPeso1" onchange="convertirPeso('1')">
+                        <option value="kg">Kilogramos (kg)</option>
+                        <option value="g">Gramos (g)</option>
+                        <option value="mg">Miligramos (mg)</option>
+                        <option value="lb">Libras (lb)</option>
+                        <option value="oz">Onzas (oz)</option>
+                    </select>
+                </div>
+                <div class="equals-sign">=</div>
+                <div class="input-group">
+                    <label>A:</label>
+                    <input type="number" id="valPeso2" placeholder="0" oninput="convertirPeso('2')">
+                    <select id="unidadPeso2" onchange="convertirPeso('1')">
+                        <option value="kg" selected>Kilogramos (kg)</option>
+                        <option value="g">Gramos (g)</option>
+                        <option value="mg">Miligramos (mg)</option>
+                        <option value="lb">Libras (lb)</option>
+                        <option value="oz">Onzas (oz)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function cambiarTab(tabId, event) {
+            document.querySelectorAll('.converter-card').forEach(card => card.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        const factoresLongitud = {
+            m: 1,
+            km: 1000,
+            cm: 0.01,
+            mm: 0.001,
+            mi: 1609.34,
+            in: 0.0254,
+            ft: 0.3048
+        };
+
+        function convertirLongitud(origen) {
+            const val1 = document.getElementById('valLongitud1');
+            const val2 = document.getElementById('valLongitud2');
+            const u1 = document.getElementById('unidadLongitud1').value;
+            const u2 = document.getElementById('unidadLongitud2').value;
+
+            if (origen === '1') {
+                if (val1.value === '') { val2.value = ''; return; }
+                let enMetros = parseFloat(val1.value) * factoresLongitud[u1];
+                let resultado = enMetros / factoresLongitud[u2];
+                val2.value = parseFloat(resultado.toFixed(6));
+            } else {
+                if (val2.value === '') { val1.value = ''; return; }
+                let enMetros = parseFloat(val2.value) * factoresLongitud[u2];
+                let resultado = enMetros / factoresLongitud[u1];
+                val1.value = parseFloat(resultado.toFixed(6));
+            }
+        }
+
+        // Temperatura
+        function convertirTemperatura(origen) {
+            const v1 = document.getElementById('valTemp1');
+            const v2 = document.getElementById('valTemp2');
+            const u1 = document.getElementById('unidadTemp1').value;
+            const u2 = document.getElementById('unidadTemp2').value;
+
+            let celsius = 0;
+
+            if (origen === '1') {
+                if (v1.value === '') { v2.value = ''; return; }
+                let val = parseFloat(v1.value);
+                if (u1 === 'C') celsius = val;
+                else if (u1 === 'F') celsius = (val - 32) * 5/9;
+                else if (u1 === 'K') celsius = val - 273.15;
+
+                let res = celsius;
+                if (u2 === 'F') res = (celsius * 9/5) + 32;
+                else if (u2 === 'K') res = celsius + 273.15;
+                v2.value = parseFloat(res.toFixed(4));
+            } else {
+                if (v2.value === '') { v1.value = ''; return; }
+                let val = parseFloat(v2.value);
+                if (u2 === 'C') celsius = val;
+                else if (u2 === 'F') celsius = (val - 32) * 5/9;
+                else if (u2 === 'K') celsius = val - 273.15;
+
+                let res = celsius;
+                if (u1 === 'F') res = (celsius * 9/5) + 32;
+                else if (u1 === 'K') res = celsius + 273.15;
+                v1.value = parseFloat(res.toFixed(4));
+            }
+        }
+
+        const factoresPeso = {
+            kg: 1,
+            g: 0.001,
+            mg: 0.000001,
+            lb: 0.453592,
+            oz: 0.0283495
+        };
+
+        function convertirPeso(origen) {
+            const val1 = document.getElementById('valPeso1');
+            const val2 = document.getElementById('valPeso2');
+            const u1 = document.getElementById('unidadPeso1').value;
+            const u2 = document.getElementById('unidadPeso2').value;
+
+            if (origen === '1') {
+                if (val1.value === '') { val2.value = ''; return; }
+                let enKg = parseFloat(val1.value) * factoresPeso[u1];
+                let resultado = enKg / factoresPeso[u2];
+                val2.value = parseFloat(resultado.toFixed(6));
+            } else {
+                if (val2.value === '') { val1.value = ''; return; }
+                let enKg = parseFloat(val2.value) * factoresPeso[u2];
+                let resultado = enKg / factoresPeso[u1];
+                val1.value = parseFloat(resultado.toFixed(6));
+            }
+        }
+
+        function regresarMenu() {
+            window.location.href = '../index.html';
+        }
+    </script>
+</body>
+</html>
