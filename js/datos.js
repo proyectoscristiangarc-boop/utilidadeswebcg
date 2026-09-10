@@ -69,5 +69,12 @@ const herramientasData = [
         titulo: "Calculadora Clínica de Hidratación",
         descripcion: "Permite calcular con precisión la fluidoterapia de mantenimiento y los requerimientos basales de un paciente mediante estándares científicos reconocidos.",
         link: "herramientas/CalculadoraHidratacion.html"
+    },
+    {
+        categoria: "oficina",
+        nombreCategoria: "Herramientas para Oficina",
+        titulo: "Generador de Contraseñas Seguras",
+        descripcion: "Genera contraseñas seguras de una forma facil y rapida.",
+        link: "herramientas/GeneradorContra.html"
     }
 ];
