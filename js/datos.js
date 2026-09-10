@@ -62,5 +62,12 @@ const herramientasData = [
         titulo: "Calculadora Clínica: IMC y BSA",
         descripcion: "Calcula tu Índice de Masa Corporal (IMC) y la Superficie Corporal (BSA).",
         link: "herramientas/CalculadoraIMC.html"
+    },
+    {
+        categoria: "clinica",
+        nombreCategoria: "Herramientas Medicas",
+        titulo: "Calculadora Clínica de Hidratación",
+        descripcion: "Permite calcular con precisión la fluidoterapia de mantenimiento y los requerimientos basales de un paciente mediante estándares científicos reconocidos.",
+        link: "herramientas/CalculadoraHidratacion.html"
     }
 ];
