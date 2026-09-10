@@ -76,5 +76,12 @@ const herramientasData = [
         titulo: "Generador de Contraseñas Seguras",
         descripcion: "Genera contraseñas seguras de una forma facil y rapida.",
         link: "herramientas/GeneradorContra.html"
+    },
+    {
+        categoria: "oficina",
+        nombreCategoria: "Herramientas para Oficina",
+        titulo: "Generador de Códigos QR",
+        descripcion: "Genera codigos qr, de url, texto libre, red wifi, correo electronico de una forma facil.",
+        link: "herramientas/GeneradorQR.html"
     }
 ];
