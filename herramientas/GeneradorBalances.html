@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Reportes y Balances</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --danger-color: #dc2626;
+            --danger-hover: #b91c1c;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --border-color: #cbd5e1;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-navbar {
+            background: var(--primary-color);
+            color: #ffffff;
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .btn-menu {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-menu:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ffffff;
+        }
+
+        .navbar-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .controls-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .controls-card h2 {
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .input-group input, .input-group select {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+            width: 100%;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--accent-color);
+        }
+
+        .btn-action {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-action:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-delete {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-delete:hover {
+            background-color: var(--danger-hover);
+        }
+
+        .table-container {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .table-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .table-header-flex h2 {
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            margin-top: 10px;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.95rem;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .badge-ingreso {
+            color: #16a34a;
+            font-weight: 600;
+        }
+
+        .badge-egreso {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        /* Ajustes adaptativos simples para pantallas pequeñas */
+        @media (max-width: 600px) {
+            .top-navbar {
+                padding: 12px 15px;
+            }
+
+            .main-content {
+                padding: 20px 10px;
+            }
+
+            .table-header-flex {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-action {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-navbar">
+        <button id="btnMenuPrincipal" class="btn-menu" onclick="regresarMenu()">
+            <span>←</span> Menú Principal
+        </button>
+        <span class="navbar-title">CG</span>
+    </header>
+
+    <main class="main-content">
+        <header>
+            <h1>Generador de Reportes y Balances</h1>
+        </header>
+
+        <section class="controls-card">
+            <h2>Agregar Nuevo Registro Contable</h2>
+            <form id="recordForm" class="form-grid">
+                <div class="input-group">
+                    <label for="fecha">Fecha:</label>
+                    <input type="date" id="fecha" required>
+                </div>
+                <div class="input-group">
+                    <label for="concepto">Concepto o Descripción:</label>
+                    <input type="text" id="concepto" placeholder="Ej. Pago de servicios" required>
+                </div>
+                <div class="input-group">
+                    <label for="tipo">Tipo:</label>
+                    <select id="tipo">
+                        <option value="Ingreso">Ingreso</option>
+                        <option value="Egreso">Egreso</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="monto">Monto ($):</label>
+                    <input type="number" id="monto" placeholder="Ej. 1500.00" min="0.01" step="0.01" required>
+                </div>
+            </form>
+            <div>
+                <button type="button" class="btn-action" onclick="agregarRegistro()">Agregar Registro</button>
+            </div>
+        </section>
+
+        <section class="table-container">
+            <div class="table-header-flex">
+                <h2>Registro y Balance Actual</h2>
+                <button class="btn-action" onclick="generarPDF()">
+                    📥 Descargar Reporte PDF
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table id="recordsTable">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Concepto</th>
+                            <th>Tipo</th>
+                            <th>Monto</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let registros = [];
+
+    
+        document.getElementById('fecha').valueAsDate = new Date();
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            if (registros.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-light);">No hay registros disponibles. Agrega uno nuevo desde el formulario superior.</td></tr>`;
+                return;
+            }
+
+            registros.forEach((reg, index) => {
+                const tr = document.createElement('tr');
+                const tipoClase = reg.tipo === 'Ingreso' ? 'badge-ingreso' : 'badge-egreso';
+
+                tr.innerHTML = `
+                    <td>${reg.fecha}</td>
+                    <td>${reg.concepto}</td>
+                    <td><span class="${tipoClase}">${reg.tipo}</span></td>
+                    <td>$${reg.monto.toFixed(2)}</td>
+                    <td><button class="btn-delete" onclick="eliminarRegistro(${index})">Eliminar</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function agregarRegistro() {
+            const fecha = document.getElementById('fecha').value;
+            const concepto = document.getElementById('concepto').value.trim();
+            const tipo = document.getElementById('tipo').value;
+            const monto = parseFloat(document.getElementById('monto').value);
+
+            if (!fecha || !concepto || isNaN(monto)) {
+                alert('Por favor completa todos los campos correctamente.');
+                return;
+            }
+
+            registros.push({ fecha, concepto, tipo, monto });
+            renderTable();
+
+            document.getElementById('concepto').value = '';
+            document.getElementById('monto').value = '';
+        }
+
+        function eliminarRegistro(index) {
+            registros.splice(index, 1);
+            renderTable();
+        }
+
+        function generarPDF() {
+            if (registros.length === 0) {
+                alert("No hay registros para exportar.");
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Encabezado del PDF
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(20);
+            doc.setTextColor(15, 23, 42);
+            doc.text("Reporte Financiero y Balance", 14, 20);
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.setTextColor(100, 116, 139);
+            doc.text(`Fecha de emisión: ${new Date().toLocaleDateString()}`, 14, 28);
+
+            let totalIngresos = 0;
+            let totalEgresos = 0;
+
+            const tableData = registros.map(r => {
+                if (r.tipo === 'Ingreso') totalIngresos += r.monto;
+                else totalEgresos += r.monto;
+                return [r.fecha, r.concepto, r.tipo, `$${r.monto.toFixed(2)}`];
+            });
+
+            const balanceNeto = totalIngresos - totalEgresos;
+
+            doc.autoTable({
+                startY: 38,
+                head: [['Fecha', 'Concepto', 'Tipo', 'Monto']],
+                body: tableData,
+                theme: 'striped',
+                headStyles: { fillColor: [15, 23, 42] }
+            });
+
+            const finalY = doc.lastAutoTable.finalY + 15;
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(12);
+            doc.setTextColor(15, 23, 42);
+            doc.text("Resumen de Balance:", 14, finalY);
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.text(`Total Ingresos: $${totalIngresos.toFixed(2)}`, 14, finalY + 8);
+            doc.text(`Total Egresos: $${totalEgresos.toFixed(2)}`, 14, finalY + 15);
+            
+            doc.setFont("helvetica", "bold");
+            doc.setTextColor(balanceNeto >= 0 ? 22 : 220, balanceNeto >= 0 ? 163 : 38, balanceNeto >= 0 ? 74 : 38);
+            doc.text(`Balance Neto: $${balanceNeto.toFixed(2)}`, 14, finalY + 24);
+
+            doc.save("reporte_financiero.pdf");
+        }
+
+        function regresarMenu() {
+            window.location.href = '../index.html';
+        }
+
+        renderTable();
+    </script>
+</body>
+</html>
