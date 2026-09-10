@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Calculadora Clínica de Hidratación</title>
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --accent-color: #0284c7;
+            --accent-hover: #0369a1;
+            --success-color: #16a34a;
+            --warning-color: #ca8a04;
+            --danger-color: #dc2626;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --border-color: #cbd5e1;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        .top-navbar {
+            background: var(--primary-color);
+            color: #ffffff;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-menu {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-menu:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ffffff;
+        }
+
+        .navbar-title {
+            font-size: 1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .main-content {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                padding: 30px 20px;
+                gap: 24px;
+            }
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            line-height: 1.2;
+        }
+
+        @media (min-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        .grid-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+        }
+
+        @media (min-width: 900px) {
+            .grid-layout {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 24px;
+                align-items: start;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        @media (min-width: 600px) {
+            .card {
+                padding: 24px;
+            }
+        }
+
+        .card h2 {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 8px;
+        }
+
+        .form-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            width: 100%;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-color);
+        }
+
+        .input-unit-wrapper {
+            display: flex;
+            flex-direction: column; 
+            width: 100%;
+            gap: 6px;
+        }
+
+        .input-unit-wrapper input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            background-color: #f8fafc;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-unit-wrapper input:focus {
+            border-color: var(--accent-color);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+        }
+
+        .input-unit-wrapper select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: #f1f5f9;
+            font-size: 0.85rem;
+            font-weight: 600;
+            outline: none;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: border-color 0.2s;
+        }
+
+        .input-unit-wrapper select:focus {
+            border-color: var(--accent-color);
+        }
+
+        @media (min-width: 500px) {
+            .input-unit-wrapper {
+                flex-direction: row;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                overflow: hidden;
+                background-color: #f8fafc;
+            }
+
+            .input-unit-wrapper:focus-within {
+                border-color: var(--accent-color);
+                background-color: #ffffff;
+                box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+            }
+
+            .input-unit-wrapper input {
+                border: none;
+                background: transparent;
+                box-shadow: none !important;
+            }
+
+            .input-unit-wrapper select {
+                width: 100px;
+                flex-shrink: 0;
+                border: none;
+                border-left: 1px solid var(--border-color);
+                border-radius: 0;
+                background-color: #f1f5f9;
+                text-align: center;
+            }
+        }
+
+        .full-select {
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background-color: #f8fafc;
+            width: 100%;
+            outline: none;
+            cursor: pointer;
+            color: var(--text-color);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .full-select:focus {
+            border-color: var(--accent-color);
+            background-color: #ffffff;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+        }
+
+        .btn-action {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 5px;
+        }
+
+        .btn-action:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .preview-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 16px;
+            padding: 24px 16px;
+            background: #f8fafc;
+            border: 1px dashed var(--border-color);
+            border-radius: var(--radius);
+            min-height: 320px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .results-placeholder {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 0.95rem;
+            padding: 20px;
+        }
+
+        .results-content {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .result-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            width: 100%;
+        }
+
+        .result-card h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: var(--text-light);
+            letter-spacing: 0.5px;
+        }
+
+        .result-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            word-break: break-all;
+        }
+
+        .clinical-note {
+            font-size: 0.78rem;
+            color: var(--text-light);
+            margin-top: 4px;
+            font-style: italic;
+            border-top: 1px solid var(--border-color);
+            padding-top: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-navbar">
+        <a href="#" class="btn-menu" onclick="regresarMenu(event)">
+            <span>←</span> Menú Principal
+        </a>
+        <span class="navbar-title">CG</span>
+    </header>
+
+    <main class="main-content">
+        <header>
+            <h1>Calculadora Clínica de Hidratación</h1>
+        </header>
+
+        <div class="grid-layout">
+            <section class="card">
+                <h2>Parámetros y Estándar Clínico</h2>
+                
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="peso">Peso del Paciente:</label>
+                        <div class="input-unit-wrapper">
+                            <input type="number" id="peso" step="0.1" placeholder="Ej. 70" min="0" oninput="calcularHidratacionMedica()">
+                            <select id="unidadPeso" onchange="calcularHidratacionMedica()">
+                                <option value="kg">Kilogramos (kg)</option>
+                                <option value="lb">Libras (lb)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="talla">Talla / Estatura:</label>
+                        <div class="input-unit-wrapper">
+                            <input type="number" id="talla" step="0.1" placeholder="Ej. 170" min="0" oninput="calcularHidratacionMedica()">
+                            <select id="unidadTalla" onchange="calcularHidratacionMedica()">
+                                <option value="cm">Centímetros (cm)</option>
+                                <option value="m">Metros (m)</option>
+                                <option value="in">Pulgadas (in)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="metodo">Criterio / Estándar Médico:</label>
+                        <select id="metodo" class="full-select" onchange="calcularHidratacionMedica()">
+                            <option value="holliday">Regla de Holliday-Segar (Mantenimiento Basal)</option>
+                            <option value="sc_1500">Superficie Corporal (1500 mL/m²/día - Estándar)</option>
+                            <option value="sc_3000">Superficie Corporal (3000 mL/m²/día - Máximo)</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="factorClinico">Factores de Corrección Clínica:</label>
+                        <select id="factorClinico" class="full-select" onchange="calcularHidratacionMedica()">
+                            <option value="1.0">Basal Normal (Sin alteraciones)</option>
+                            <option value="1.12">Fiebre (+12% por cada 1°C sobre 37°C)</option>
+                            <option value="1.20">Taquipnea / Hiperventilación moderada</option>
+                            <option value="1.25">Ambiente Caluroso / Estrés Térmico</option>
+                            <option value="0.80">Restricción hídrica (Cardíaca/renal leve)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="button" class="btn-action" onclick="calcularHidratacionMedica()">
+                Calcular Parámetros de Infusión
+                </button>
+            </section>
+
+            <section class="card">
+                <h2>Reporte Clínico</h2>
+                <div class="preview-container">
+                    <div id="placeholderResultados" class="results-placeholder">
+                        Introduce los parámetros del paciente para ver los requerimientos hídricos en tiempo real.
+                    </div>
+
+                    <div class="results-content" id="seccionResultados" style="display: none;">
+                        <div class="result-card">
+                            <h3>Superficie Corporal (Mosteller)</h3>
+                            <div class="result-value" id="resSc">--</div>
+                        </div>
+
+                        <div class="result-card">
+                            <h3>Volumen Basal de Referencia</h3>
+                            <div class="result-value" id="resBasal">--</div>
+                        </div>
+
+                        <div class="result-card">
+                            <h3>Volumen Total Ajustado (24h)</h3>
+                            <div class="result-value" id="resVolumen" style="color: var(--accent-color);">--</div>
+                        </div>
+
+                        <div class="result-card">
+                            <h3>Ritmo de Infusión (Goteo Horario)</h3>
+                            <div class="result-value" id="resRitmo">--</div>
+                            <div class="clinical-note">
+                                * Nota: Cálculo basado en normativas médicas de fluidoterapia. Correlacionar con balance hídrico y estado hemodinámico.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        function regresarMenu(event) {
+            window.location.href = '../index.html';
+        }
+
+        function calcularHidratacionMedica() {
+            const pesoInput = document.getElementById('peso').value;
+            const tallaInput = document.getElementById('talla').value;
+            const unidadPeso = document.getElementById('unidadPeso').value;
+            const unidadTalla = document.getElementById('unidadTalla').value;
+            const metodo = document.getElementById('metodo').value;
+            const factorClinico = parseFloat(document.getElementById('factorClinico').value);
+
+            const placeholder = document.getElementById('placeholderResultados');
+            const resultados = document.getElementById('seccionResultados');
+
+            if (!pesoInput || !tallaInput || pesoInput <= 0 || tallaInput <= 0) {
+                resultados.style.display = 'none';
+                placeholder.style.display = 'block';
+                return;
+            }
+
+            let peso = parseFloat(pesoInput);
+            let talla = parseFloat(tallaInput);
+
+            if (unidadPeso === 'lb') {
+                peso = peso / 2.20462;
+            }
+
+            if (unidadTalla === 'm') {
+                talla = talla * 100;
+            } else if (unidadTalla === 'in') {
+                talla = talla * 2.54;
+            }
+
+            const sc = Math.sqrt((peso * talla) / 3600);
+
+            let volumenBasal = 0;
+
+            if (metodo === 'holliday') {
+                if (peso <= 10) {
+                    volumenBasal = peso * 100;
+                } else if (peso <= 20) {
+                    volumenBasal = (10 * 100) + ((peso - 10) * 50);
+                } else {
+                    volumenBasal = (10 * 100) + (10 * 50) + ((peso - 20) * 20);
+                }
+            } else if (metodo === 'sc_1500') {
+                volumenBasal = sc * 1500;
+            } else if (metodo === 'sc_3000') {
+                volumenBasal = sc * 3000;
+            }
+
+            const volumenTotal = volumenBasal * factorClinico;
+            const ritmoHorario = volumenTotal / 24;
+
+            document.getElementById('resSc').innerText = sc.toFixed(2) + " m²";
+            document.getElementById('resBasal').innerText = Math.round(volumenBasal).toLocaleString() + " mL/día";
+            document.getElementById('resVolumen').innerText = Math.round(volumenTotal).toLocaleString() + " mL";
+            document.getElementById('resRitmo').innerText = ritmoHorario.toFixed(1) + " mL/h";
+
+            placeholder.style.display = 'none';
+            resultados.style.display = 'flex';
+        }
+    </script>
+
+</body>
+</html>
