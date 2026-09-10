@@ -55,5 +55,12 @@ const herramientasData = [
         titulo: "Generador Profesional de Presupuestos de Obra",
         descripcion: "Es una herramienta web ágil y responsiva diseñada para optimizar la estimación y control de costos en proyectos de construcción, remodelación e ingeniería.",
         link: "herramientas/GeneradorPresupuestos.html"
+    },
+    {
+        categoria: "clinica",
+        nombreCategoria: "Herramientas Medicas",
+        titulo: "Calculadora Clínica: IMC y BSA",
+        descripcion: "Calcula tu Índice de Masa Corporal (IMC) y la Superficie Corporal (BSA).",
+        link: "herramientas/CalculadoraIMC.html"
     }
 ];
