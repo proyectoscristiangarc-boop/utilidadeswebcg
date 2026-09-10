@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Organizador de Horarios y Turnos de Personal</title>
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --danger-color: #dc2626;
+            --danger-hover: #b91c1c;
+            --success-color: #16a34a;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --border-color: #cbd5e1;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .top-navbar {
+            background: var(--primary-color);
+            color: #ffffff;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .btn-menu {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-menu:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ffffff;
+        }
+
+        .navbar-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header h1 {
+            font-size: 1.35rem;
+            color: var(--primary-color);
+        }
+
+        .controls-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .controls-card h2 {
+            font-size: 1.05rem;
+            margin-bottom: 12px;
+            color: var(--primary-color);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-color);
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            background-color: #fff;
+            color: var(--text-color);
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .btn-action {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 11px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .btn-action:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-print {
+            background-color: var(--success-color);
+            width: 100%;
+        }
+
+        .btn-print:hover {
+            background-color: #15803d;
+        }
+
+        .btn-delete {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        .btn-delete:hover {
+            background-color: var(--danger-hover);
+        }
+
+        .grid-sections {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .table-container {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .table-header-flex {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .table-header-flex h2 {
+            font-size: 1.05rem;
+            color: var(--primary-color);
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            min-width: 550px;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85rem;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .print-header {
+            display: none;
+        }
+
+        /* Diseño Adaptativo (Media Queries) */
+        @media (min-width: 640px) {
+            .main-content {
+                padding: 20px;
+            }
+            .form-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .form-grid .input-group:last-child:nth-child(odd) {
+                grid-column: span 2;
+            }
+            .btn-action, .btn-print {
+                width: auto;
+            }
+            .table-header-flex {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .form-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .form-grid .input-group:last-child:nth-child(odd) {
+                grid-column: span 1;
+            }
+            header h1 {
+                font-size: 1.6rem;
+            }
+            .controls-card, .table-container {
+                padding: 22px;
+            }
+        }
+
+        @media print {
+            body {
+                background-color: #ffffff;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .print-header {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            .print-header h1 {
+                font-size: 1.3rem;
+                color: #000;
+                margin-bottom: 4px;
+            }
+            .print-header p {
+                font-size: 0.85rem;
+                color: #555;
+            }
+            .table-container {
+                border: none;
+                box-shadow: none;
+                padding: 0;
+            }
+            .table-responsive {
+                border: none;
+            }
+            table {
+                min-width: 100% !important;
+            }
+            th, td {
+                border: 1px solid #000 !important;
+                color: #000 !important;
+            }
+            th {
+                background-color: #eee !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-navbar no-print">
+        <button id="btnMenuPrincipal" class="btn-menu" onclick="regresarMenu()">
+            <span>←</span> Menú Principal
+        </button>
+        <span class="navbar-title">CG</span>
+    </header>
+
+    <main class="main-content">
+        <header class="no-print">
+            <h1>Organizador de Horarios y Turnos</h1>
+        </header>
+
+        <section class="controls-card no-print">
+            <h2>1. Registrar Personal y Disponibilidad</h2>
+            <form id="personalForm" onsubmit="agregarPersonal(event)">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="nombreEmpleado">Nombre del Empleado:</label>
+                        <input type="text" id="nombreEmpleado" placeholder="Ej. Ana Pérez" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="rolEmpleado">Puesto / Rol:</label>
+                        <input type="text" id="rolEmpleado" placeholder="Ej. Cajero, Soporte" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="disponibilidad">Disponibilidad Preferida:</label>
+                        <select id="disponibilidad">
+                            <option value="Tiempo Completo">Tiempo Completo</option>
+                            <option value="Mañana (AM)">Mañana (AM)</option>
+                            <option value="Tarde (PM)">Tarde (PM)</option>
+                            <option value="Fines de Semana">Fines de Semana</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <button type="submit" class="btn-action">+ Registrar Empleado</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="controls-card no-print">
+            <h2>2. Asignar Turno Semanal</h2>
+            <form id="turnoForm" onsubmit="asignarTurno(event)">
+                <div class="form-grid">
+                    <div class="input-group">
+                        <label for="selectEmpleado">Seleccionar Empleado:</label>
+                        <select id="selectEmpleado" required>
+                            <option value="">-- Sin personal registrado --</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="diaSemana">Día de la Semana:</label>
+                        <select id="diaSemana">
+                            <option value="Lunes">Lunes</option>
+                            <option value="Martes">Martes</option>
+                            <option value="Miércoles">Miércoles</option>
+                            <option value="Jueves">Jueves</option>
+                            <option value="Viernes">Viernes</option>
+                            <option value="Sábado">Sábado</option>
+                            <option value="Domingo">Domingo</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="tipoTurno">Horario / Turno Asignado:</label>
+                        <input type="text" id="tipoTurno" placeholder="Ej. 08:00 AM - 04:00 PM o Descanso" required>
+                    </div>
+                </div>
+                <div>
+                    <button type="submit" class="btn-action">📅 Asignar Turno</button>
+                </div>
+            </form>
+        </section>
+
+        <div class="grid-sections">
+            <section class="table-container no-print">
+                <div class="table-header-flex">
+                    <h2>Personal y Disponibilidad Registrada</h2>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Puesto / Rol</th>
+                                <th>Disponibilidad</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaPersonalBody">
+                            <tr><td colspan="4" style="text-align: center; color: var(--text-light);">No hay personal registrado.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="table-container">
+                <div class="print-header">
+                    <h1>Cronograma Oficial de Turnos de Trabajo</h1>
+                    <p id="fechaImpresionPDF"></p>
+                </div>
+
+                <div class="table-header-flex">
+                    <h2>Cronograma de Turnos Asignados</h2>
+                    <button class="btn-action btn-print no-print" onclick="descargarPDF()">📥 Descargar PDF / Imprimir</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Día</th>
+                                <th>Empleado</th>
+                                <th>Puesto / Rol</th>
+                                <th>Horario Asignado</th>
+                                <th class="no-print">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaTurnosBody">
+                            <tr><td colspan="5" style="text-align: center; color: var(--text-light);">No hay turnos programados.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <script>
+        let listaPersonal = [];
+        let listaTurnos = [];
+
+        function agregarPersonal(e) {
+            if (e) e.preventDefault();
+
+            const nombre = document.getElementById('nombreEmpleado').value.trim();
+            const rol = document.getElementById('rolEmpleado').value.trim();
+            const disponibilidad = document.getElementById('disponibilidad').value;
+
+            if (!nombre || !rol) {
+                alert("Por favor completa los campos del empleado.");
+                return;
+            }
+
+            const nuevoEmpleado = {
+                id: 'emp_' + Date.now(),
+                nombre,
+                rol,
+                disponibilidad
+            };
+
+            listaPersonal.push(nuevoEmpleado);
+            renderizarPersonal();
+
+            document.getElementById('nombreEmpleado').value = '';
+            document.getElementById('rolEmpleado').value = '';
+        }
+
+        function eliminarPersonal(id) {
+            listaPersonal = listaPersonal.filter(p => p.id !== id);
+            listaTurnos = listaTurnos.filter(t => t.empleadoId !== id);
+            renderizarPersonal();
+            renderizarTurnos();
+        }
+
+        function renderizarPersonal() {
+            const tbody = document.getElementById('tablaPersonalBody');
+            const selectEmp = document.getElementById('selectEmpleado');
+            
+            tbody.innerHTML = '';
+            selectEmp.innerHTML = '<option value="">-- Seleccionar Empleado --</option>';
+
+            if (listaPersonal.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-light);">No hay personal registrado.</td></tr>`;
+                return;
+            }
+
+            listaPersonal.forEach(emp => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: 600;">${escaparHTML(emp.nombre)}</td>
+                    <td>${escaparHTML(emp.rol)}</td>
+                    <td><span style="background: #e2e8f0; padding: 3px 8px; border-radius: 6px; font-size: 0.8rem;">${emp.disponibilidad}</span></td>
+                    <td><button class="btn-delete" onclick="eliminarPersonal('${emp.id}')">Eliminar</button></td>
+                `;
+                tbody.appendChild(tr);
+
+                const option = document.createElement('option');
+                option.value = emp.id;
+                option.textContent = `${emp.nombre} (${emp.rol})`;
+                selectEmp.appendChild(option);
+            });
+        }
+
+        function asignarTurno(e) {
+            if (e) e.preventDefault();
+
+            const empleadoId = document.getElementById('selectEmpleado').value;
+            const diaSemana = document.getElementById('diaSemana').value;
+            const tipoTurno = document.getElementById('tipoTurno').value.trim();
+
+            if (!empleadoId) {
+                alert("Selecciona un empleado válido para programar el turno.");
+                return;
+            }
+
+            if (!tipoTurno) {
+                alert("Por favor escribe el detalle o horario del turno.");
+                return;
+            }
+
+            const empleadoObj = listaPersonal.find(p => p.id === empleadoId);
+            if (!empleadoObj) return;
+
+            const turnoExistenteIndex = listaTurnos.findIndex(t => t.empleadoId === empleadoId && t.dia === diaSemana);
+            if (turnoExistenteIndex >= 0) {
+                listaTurnos[turnoExistenteIndex].tipoTurno = tipoTurno;
+            } else {
+                listaTurnos.push({
+                    id: 'turno_' + Date.now(),
+                    empleadoId,
+                    nombre: empleadoObj.nombre,
+                    rol: empleadoObj.rol,
+                    dia: diaSemana,
+                    tipoTurno
+                });
+            }
+
+            renderizarTurnos();
+            document.getElementById('tipoTurno').value = '';
+        }
+
+        function eliminarTurno(id) {
+            listaTurnos = listaTurnos.filter(t => t.id !== id);
+            renderizarTurnos();
+        }
+
+        function renderizarTurnos() {
+            const tbody = document.getElementById('tablaTurnosBody');
+            tbody.innerHTML = '';
+
+            if (listaTurnos.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-light);">No hay turnos programados.</td></tr>`;
+                return;
+            }
+
+            const ordenDias = { 'Lunes': 1, 'Martes': 2, 'Miércoles': 3, 'Jueves': 4, 'Viernes': 5, 'Sábado': 6, 'Domingo': 7 };
+            listaTurnos.sort((a, b) => ordenDias[a.dia] - ordenDias[b.dia]);
+
+            listaTurnos.forEach(t => {
+                const tr = document.createElement('tr');
+                let esDescanso = t.tipoTurno.toLowerCase().includes('descanso') || t.tipoTurno.toLowerCase().includes('libre');
+                let colorTurno = esDescanso ? 'color: var(--danger-color); font-weight: 600;' : 'color: var(--success-color); font-weight: 600;';
+
+                tr.innerHTML = `
+                    <td style="font-weight: 600;">${t.dia}</td>
+                    <td>${escaparHTML(t.nombre)}</td>
+                    <td>${escaparHTML(t.rol)}</td>
+                    <td style="${colorTurno}">${escaparHTML(t.tipoTurno)}</td>
+                    <td class="no-print"><button class="btn-delete" onclick="eliminarTurno('${t.id}')">Eliminar</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function descargarPDF() {
+            if (listaTurnos.length === 0) {
+                alert("No hay turnos programados para exportar.");
+                return;
+            }
+
+            document.getElementById('fechaImpresionPDF').innerText = "Reporte generado el: " + new Date().toLocaleDateString();
+            window.print();
+        }
+
+        function regresarMenu() {
+            window.location.href = '../index.html';
+        }
+
+        function escaparHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+    </script>
+</body>
+</html>
