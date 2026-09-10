@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Generador Profesional de Presupuestos de Obra</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #1e293b;
+            --accent-color: #2563eb;
+            --success-color: #16a34a;
+            --warning-color: #d97706;
+            --danger-color: #dc2626;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --border-color: #cbd5e1;
+            --radius: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            -webkit-text-size-adjust: 100%;
+        }
+
+        .top-navbar {
+            background: var(--primary-color);
+            color: #ffffff;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+            gap: 8px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-menu {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+
+        .btn-menu:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .navbar-date {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .main-container {
+            flex: 1;
+            max-width: 1400px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        @media (min-width: 768px) {
+            .main-container {
+                padding: 14px;
+                gap: 14px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .main-container {
+                display: grid;
+                grid-template-columns: 360px 1fr;
+                padding: 18px;
+                gap: 18px;
+            }
+        }
+
+        @media (min-width: 1280px) {
+            .main-container {
+                grid-template-columns: 400px 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 14px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            height: fit-content;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        @media (min-width: 600px) {
+            .card {
+                padding: 18px;
+            }
+        }
+
+        .card h2 {
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--bg-color);
+            padding-bottom: 6px;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 100%;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 16px;
+            outline: none;
+            width: 100%;
+            background-color: #f8fafc;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--accent-color);
+            background-color: #fff;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+        }
+
+        @media (min-width: 400px) {
+            .form-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 11px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .btn:hover {
+            background-color: #1d4ed8;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+        }
+        .btn-success:hover {
+            background-color: #15803d;
+        }
+
+        .dashboard-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
+            min-width: 0;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 8px;
+            width: 100%;
+        }
+
+        @media (min-width: 480px) {
+            .kpi-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .kpi-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .kpi-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .kpi-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-color);
+        }
+
+        .kpi-card.materials::before { background: #3b82f6; }
+        .kpi-card.labor::before { background: #8b5cf6; }
+        .kpi-card.logistics::before { background: #f59e0b; }
+        .kpi-card.total::before { background: var(--success-color); }
+
+        .kpi-title {
+            font-size: 0.7rem;
+            color: var(--text-light);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .kpi-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            word-break: break-all;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background: #fff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.82rem;
+            min-width: 550px;
+        }
+
+        th, td {
+            padding: 9px 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            color: var(--primary-color);
+            white-space: nowrap;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .badge {
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            display: inline-block;
+            white-space: nowrap;
+        }
+
+        .badge-material { background: #eff6ff; color: #1e40af; }
+        .badge-labor { background: #f3e8ff; color: #6b21a8; }
+        .badge-transport { background: #fef3c7; color: #92400e; }
+        .badge-other { background: #f1f5f9; color: #334155; }
+
+        .btn-delete {
+            background: #fee2e2;
+            color: #991b1b;
+            border: none;
+            padding: 5px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.72rem;
+            font-weight: 600;
+        }
+        .btn-delete:hover {
+            background: #fecaca;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-light);
+            padding: 20px;
+            font-style: italic;
+        }
+
+        .summary-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .summary-row {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            font-size: 0.85rem;
+        }
+
+        .summary-row span:first-child {
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .summary-row span:last-child, .summary-row strong {
+            color: var(--primary-color);
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .summary-row.total-row {
+            border-top: 2px solid var(--border-color);
+            padding-top: 8px;
+            margin-top: 2px;
+        }
+
+        .summary-row.total-row span:last-child {
+            font-size: 1.2rem;
+            color: var(--success-color);
+        }
+
+        @media (min-width: 480px) {
+            .summary-row {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .summary-row span:last-child, .summary-row strong {
+                font-size: 1rem;
+            }
+            .summary-row.total-row span:last-child {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="top-navbar">
+        <div class="navbar-brand">
+            <a href="../index.html" class="btn-menu">← Regresar</a>
+            <div class="navbar-title">
+                <span>CG</span>
+            </div>
+        </div>
+        <div class="navbar-date" id="currentDate"></div>
+    </nav>
+
+    <div class="main-container">
+        <section class="card">
+            <h2>Datos del Proyecto</h2>
+            <div class="form-group">
+                <label for="clienteNombre">Cliente / Propietario:</label>
+                <input type="text" id="clienteNombre" placeholder="Ej. Juan Pérez">
+            </div>
+            <div class="form-group">
+                <label for="proyectoNombre">Nombre del Proyecto:</label>
+                <input type="text" id="proyectoNombre" placeholder="Ej. Remodelación Local">
+            </div>
+
+            <h2 style="margin-top: 14px;">Agregar Concepto</h2>
+            <form id="itemForm" onsubmit="agregarItem(event)">
+                <div class="form-group">
+                    <label for="tipoItem">Tipo de Costo:</label>
+                    <select id="tipoItem">
+                        <option value="Material">Material / Insumo</option>
+                        <option value="Mano de Obra">Mano de Obra</option>
+                        <option value="Transporte">Transporte / Logística</option>
+                        <option value="Otro">Otro Gasto</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="descripcionItem">Descripción:</label>
+                    <input type="text" id="descripcionItem" placeholder="Ej. Cemento o Cuadrilla" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cantidadItem">Cantidad:</label>
+                        <input type="number" id="cantidadItem" placeholder="Ej. 10" min="0.01" step="any" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="precioUnitario">P. Unitario ($):</label>
+                        <input type="number" id="precioUnitario" placeholder="Ej. 15.50" min="0" step="any" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">➕ Añadir Concepto</button>
+            </form>
+
+            <div style="margin-top: 12px; border-top: 1px solid var(--border-color); padding-top: 10px;">
+                <div class="form-group">
+                    <label for="margenUtilidad">Imprevistos / Utilidad (%):</label>
+                    <input type="number" id="margenUtilidad" value="10" min="0" step="any" oninput="calcularTotales()">
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-success" style="margin-top: 10px;" onclick="descargarPresupuestoPDF()">📥 Descargar en PDF</button>
+        </section>
+
+        <div class="dashboard-content">
+        
+            <div class="kpi-grid">
+                <div class="kpi-card materials">
+                    <span class="kpi-title">Materiales</span>
+                    <span class="kpi-value" id="kpiMaterials">$0.00</span>
+                </div>
+                <div class="kpi-card labor">
+                    <span class="kpi-title">Mano de Obra</span>
+                    <span class="kpi-value" id="kpiLabor">$0.00</span>
+                </div>
+                <div class="kpi-card logistics">
+                    <span class="kpi-title">Transporte / Otros</span>
+                    <span class="kpi-value" id="kpiLogistics">$0.00</span>
+                </div>
+                <div class="kpi-card total">
+                    <span class="kpi-title">Presupuesto Final</span>
+                    <span class="kpi-value" id="kpiTotalFinal">$0.00</span>
+                </div>
+            </div>
+
+            <section class="card">
+                <h2>Desglose de Partidas</h2>
+                <div class="table-container">
+                    <table id="tablaPresupuesto">
+                        <thead>
+                            <tr>
+                                <th>Tipo</th>
+                                <th>Descripción</th>
+                                <th>Cant.</th>
+                                <th>P. Unitario</th>
+                                <th>Subtotal</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyPresupuesto">
+                            <tr>
+                                <td colspan="6" class="empty-state">No hay conceptos agregados. Completa el formulario para comenzar.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="summary-box" style="margin-top: 12px;">
+                    <div class="summary-row">
+                        <span>Subtotal General:</span>
+                        <strong id="sumSubtotal">$0.00</strong>
+                    </div>
+                    <div class="summary-row">
+                        <span id="labelUtilidad">Imprevistos / Utilidad (10%):</span>
+                        <strong id="sumUtilidad">$0.00</strong>
+                    </div>
+                    <div class="summary-row total-row">
+                        <span>Total Presupuestado:</span>
+                        <span id="sumTotalFinal">$0.00</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('es-ES', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' });
+
+        let presupuestoItems = [];
+
+        function agregarItem(event) {
+            event.preventDefault();
+
+            const tipo = document.getElementById('tipoItem').value;
+            const descripcion = document.getElementById('descripcionItem').value.trim();
+            const cantidad = parseFloat(document.getElementById('cantidadItem').value);
+            const precioUnitario = parseFloat(document.getElementById('precioUnitario').value);
+            const subtotal = cantidad * precioUnitario;
+
+            presupuestoItems.push({
+                id: Date.now(),
+                tipo,
+                descripcion,
+                cantidad,
+                precioUnitario,
+                subtotal
+            });
+
+            document.getElementById('itemForm').reset();
+            document.getElementById('tipoItem').value = 'Material';
+            actualizarTablaYTotales();
+        }
+
+        function eliminarItem(id) {
+            presupuestoItems = presupuestoItems.filter(item => item.id !== id);
+            actualizarTablaYTotales();
+        }
+
+        function actualizarTablaYTotales() {
+            const tbody = document.getElementById('tbodyPresupuesto');
+            tbody.innerHTML = '';
+
+            if (presupuestoItems.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="empty-state">No hay conceptos agregados. Completa el formulario para comenzar.</td></tr>`;
+                document.getElementById('kpiMaterials').textContent = '$0.00';
+                document.getElementById('kpiLabor').textContent = '$0.00';
+                document.getElementById('kpiLogistics').textContent = '$0.00';
+                document.getElementById('kpiTotalFinal').textContent = '$0.00';
+                document.getElementById('sumSubtotal').textContent = '$0.00';
+                document.getElementById('sumUtilidad').textContent = '$0.00';
+                document.getElementById('sumTotalFinal').textContent = '$0.00';
+                return;
+            }
+
+            let totalMaterials = 0;
+            let totalLabor = 0;
+            let totalLogistics = 0;
+            let subtotalGeneral = 0;
+
+            presupuestoItems.forEach(item => {
+                subtotalGeneral += item.subtotal;
+
+                if (item.tipo === 'Material') totalMaterials += item.subtotal;
+                else if (item.tipo === 'Mano de Obra') totalLabor += item.subtotal;
+                else totalLogistics += item.subtotal;
+
+                let badgeClass = 'badge-other';
+                if (item.tipo === 'Material') badgeClass = 'badge-material';
+                else if (item.tipo === 'Mano de Obra') badgeClass = 'badge-labor';
+                else if (item.tipo === 'Transporte') badgeClass = 'badge-transport';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><span class="badge ${badgeClass}">${item.tipo}</span></td>
+                    <td><strong>${item.descripcion}</strong></td>
+                    <td>${item.cantidad}</td>
+                    <td>$${item.precioUnitario.toFixed(2)}</td>
+                    <td><strong>$${item.subtotal.toFixed(2)}</strong></td>
+                    <td><button type="button" class="btn-delete" onclick="eliminarItem(${item.id})">Eliminar</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            const porcentajeUtilidad = parseFloat(document.getElementById('margenUtilidad').value) || 0;
+            const valorUtilidad = subtotalGeneral * (porcentajeUtilidad / 100);
+            const totalFinal = subtotalGeneral + valorUtilidad;
+
+            document.getElementById('kpiMaterials').textContent = `$${totalMaterials.toFixed(2)}`;
+            document.getElementById('kpiLabor').textContent = `$${totalLabor.toFixed(2)}`;
+            document.getElementById('kpiLogistics').textContent = `$${totalLogistics.toFixed(2)}`;
+            document.getElementById('kpiTotalFinal').textContent = `$${totalFinal.toFixed(2)}`;
+
+            document.getElementById('sumSubtotal').textContent = `$${subtotalGeneral.toFixed(2)}`;
+            document.getElementById('labelUtilidad').textContent = `Imprevistos / Utilidad (${porcentajeUtilidad}%):`;
+            document.getElementById('sumUtilidad').textContent = `$${valorUtilidad.toFixed(2)}`;
+            document.getElementById('sumTotalFinal').textContent = `$${totalFinal.toFixed(2)}`;
+        }
+
+        function calcularTotales() {
+            actualizarTablaYTotales();
+        }
+
+        function descargarPresupuestoPDF() {
+            if (presupuestoItems.length === 0) {
+                alert("Agrega al menos un concepto para exportar el presupuesto.");
+                return;
+            }
+
+            const cliente = document.getElementById('clienteNombre').value.trim() || "Cliente General";
+            const proyecto = document.getElementById('proyectoNombre').value.trim() || "Proyecto de Construcción";
+            const porcentajeUtilidad = parseFloat(document.getElementById('margenUtilidad').value) || 0;
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(18);
+            doc.setTextColor(30, 41, 59);
+            doc.text("PRESUPUESTO DE OBRA", 14, 20);
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.setTextColor(100, 116, 139);
+            doc.text(`Cliente: ${cliente}`, 14, 28);
+            doc.text(`Proyecto: ${proyecto}`, 14, 34);
+            const fechaStr = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+            doc.text(`Fecha de emisión: ${fechaStr}`, 14, 40);
+
+            const tableColumns = ["Tipo", "Descripción", "Cant.", "P. Unitario", "Subtotal"];
+            const tableRows = [];
+
+            let subtotalGeneral = 0;
+            presupuestoItems.forEach(item => {
+                subtotalGeneral += item.subtotal;
+                tableRows.push([
+                    item.tipo,
+                    item.descripcion,
+                    item.cantidad,
+                    `$${item.precioUnitario.toFixed(2)}`,
+                    `$${item.subtotal.toFixed(2)}`
+                ]);
+            });
+
+            doc.autoTable({
+                head: [tableColumns],
+                body: tableRows,
+                startY: 46,
+                theme: 'grid',
+                headStyles: { fillColor: [30, 41, 59], textColor: [255, 255, 255], fontStyle: 'bold' },
+                styles: { fontSize: 9, cellPadding: 5 }
+            });
+
+            const finalY = doc.lastAutoTable.finalY + 10;
+            const valorUtilidad = subtotalGeneral * (porcentajeUtilidad / 100);
+            const totalFinal = subtotalGeneral + valorUtilidad;
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.setTextColor(30, 41, 59);
+            
+            doc.text(`Subtotal General:`, 130, finalY);
+            doc.text(`$${subtotalGeneral.toFixed(2)}`, 180, finalY, { align: 'right' });
+
+            doc.text(`Imprevistos (${porcentajeUtilidad}%):`, 130, finalY + 6);
+            doc.text(`$${valorUtilidad.toFixed(2)}`, 180, finalY + 6, { align: 'right' });
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(12);
+            doc.text(`Total Final:`, 130, finalY + 14);
+            doc.text(`$${totalFinal.toFixed(2)}`, 180, finalY + 14, { align: 'right' });
+
+            doc.save(`Presupuesto_${proyecto.replace(/\s+/g, '_')}.pdf`);
+        }
+    </script>
+</body>
+</html>
