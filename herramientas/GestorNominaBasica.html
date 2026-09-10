@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestor de Nómina Básica - El Salvador</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #0f172a;
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --danger-color: #dc2626;
+            --danger-hover: #b91c1c;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --border-color: #cbd5e1;
+            --radius: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        .top-navbar {
+            background: var(--primary-color);
+            color: #ffffff;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .btn-menu {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #ffffff;
+            padding: 8px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-menu:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #ffffff;
+        }
+
+        .navbar-title {
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .main-content {
+            flex: 1;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px 12px;
+        }
+
+        header {
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            word-break: break-word;
+        }
+
+        .controls-card {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .controls-card h2 {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .form-flex {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .input-group {
+            flex: 1 1 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            font-size: 0.85rem;
+        }
+
+        .input-group input, .input-group select {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+            width: 100%;
+            max-width: 100%;
+            background-color: #fff;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+        }
+
+        .btn-action {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .btn-action:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn-delete {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-delete:hover {
+            background-color: var(--danger-hover);
+        }
+
+        .table-container {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 15px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .table-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: stretch;
+            margin-bottom: 20px;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .table-header-flex h2 {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            min-width: 750px;
+        }
+
+        th, td {
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.88rem;
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: #f8fafc;
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: #f8fafc;
+        }
+
+        @media (min-width: 768px) {
+            .input-group {
+                flex: 1 1 calc(33.333% - 10px);
+            }
+            .main-content {
+                padding: 40px 20px;
+            }
+            header h1 {
+                font-size: 1.8rem;
+            }
+            .controls-card, .table-container {
+                padding: 25px;
+            }
+            .table-header-flex {
+                flex-direction: row;
+                align-items: center;
+            }
+            .table-header-flex .btn-action {
+                width: auto;
+            }
+            .btn-action {
+                width: auto;
+            }
+            .top-navbar {
+                padding: 15px 30px;
+            }
+            .navbar-title {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="top-navbar">
+        <button id="btnMenuPrincipal" class="btn-menu" onclick="regresarMenu()">
+            <span>←</span> Menú Principal
+        </button>
+        <span class="navbar-title">CG</span>
+    </header>
+
+    <main class="main-content">
+        <header>
+            <h1>Gestor de Nómina Básica - El Salvador</h1>
+        </header>
+
+        <section class="controls-card">
+            <h2>Registrar Empleado y Salario</h2>
+            <form id="nominaForm" onsubmit="event.preventDefault(); agregarEmpleado();">
+                <div class="form-flex">
+                    <div class="input-group">
+                        <label for="nombre">Nombre del Empleado:</label>
+                        <input type="text" id="nombre" placeholder="Ej. Juan Pérez" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="salarioBase">Salario Mensual ($):</label>
+                        <input type="number" id="salarioBase" placeholder="Ej. 600.00" min="0.01" step="0.01" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="afpTipo">Tipo de AFP:</label>
+                        <select id="afpTipo">
+                            <option value="7.2">AFP 7.2% (Laboral)</option>
+                            <option value="particular">Otro / Exento</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <button type="submit" class="btn-action">Calcular y Agregar a Nómina</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="table-container">
+            <div class="table-header-flex">
+                <h2>Planilla de Pagos</h2>
+                <button class="btn-action" onclick="generarPDF()">
+                    📥 Descargar Planilla PDF
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table id="recordsTable">
+                    <thead>
+                        <tr>
+                            <th>Empleado</th>
+                            <th>Salario Base</th>
+                            <th>ISSS (3%)</th>
+                            <th>AFP (7.2%)</th>
+                            <th>Renta (ISR)</th>
+                            <th>Total Descuentos</th>
+                            <th>Salario Neto</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <tr><td colspan="8" style="text-align: center; color: var(--text-light); white-space: normal;">No hay empleados registrados en la nómina.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let nominaEmpleados = [];
+
+        function calcularRenta(salarioGravable) {
+            if (salarioGravable <= 472.00) return 0;
+            if (salarioGravable <= 895.24) {
+                return ((salarioGravable - 472.00) * 0.10) + 17.67;
+            }
+            if (salarioGravable <= 2038.10) {
+                return ((salarioGravable - 895.24) * 0.20) + 60.00;
+            }
+            return ((salarioGravable - 2038.10) * 0.30) + 288.57;
+        }
+
+        function agregarEmpleado() {
+            const nombre = document.getElementById('nombre').value.trim();
+            const salarioBase = parseFloat(document.getElementById('salarioBase').value);
+            const tipoAfp = document.getElementById('afpTipo').value;
+
+            if (!nombre || isNaN(salarioBase) || salarioBase <= 0) {
+                alert('Por favor completa todos los campos correctamente.');
+                return;
+            }
+
+            let baseIsss = Math.min(salarioBase, 1000.00);
+            let isss = baseIsss * 0.03;
+            let afp = tipoAfp === '7.2' ? salarioBase * 0.072 : 0;
+            let salarioGravable = salarioBase - isss - afp;
+            let renta = calcularRenta(salarioGravable);
+
+            let totalDescuentos = isss + afp + renta;
+            let salarioNeto = salarioBase - totalDescuentos;
+
+            nominaEmpleados.push({
+                nombre,
+                salarioBase,
+                isss,
+                afp,
+                renta,
+                totalDescuentos,
+                salarioNeto
+            });
+
+            renderTabla();
+            document.getElementById('nombre').value = '';
+            document.getElementById('salarioBase').value = '';
+        }
+
+        function eliminarEmpleado(index) {
+            nominaEmpleados.splice(index, 1);
+            renderTabla();
+        }
+
+        function renderTabla() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            if (nominaEmpleados.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-light); white-space: normal;">No hay empleados registrados en la nómina.</td></tr>`;
+                return;
+            }
+
+            nominaEmpleados.forEach((emp, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${emp.nombre}</td>
+                    <td>$${emp.salarioBase.toFixed(2)}</td>
+                    <td>$${emp.isss.toFixed(2)}</td>
+                    <td>$${emp.afp.toFixed(2)}</td>
+                    <td>$${emp.renta.toFixed(2)}</td>
+                    <td>$${emp.totalDescuentos.toFixed(2)}</td>
+                    <td style="font-weight: bold; color: #16a34a;">$${emp.salarioNeto.toFixed(2)}</td>
+                    <td><button class="btn-delete" onclick="eliminarEmpleado(${index})">Eliminar</button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function generarPDF() {
+            if (nominaEmpleados.length === 0) {
+                alert("No hay registros de nómina para exportar.");
+                return;
+            }
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+
+            doc.setFont("helvetica", "bold");
+            doc.setFontSize(18);
+            doc.setTextColor(15, 23, 42);
+            doc.text("Planilla de Pagos y Deducciones - El Salvador", 14, 20);
+
+            doc.setFont("helvetica", "normal");
+            doc.setFontSize(10);
+            doc.setTextColor(100, 116, 139);
+            doc.text(`Fecha de emisión: ${new Date().toLocaleDateString()}`, 14, 26);
+
+            const tableData = nominaEmpleados.map(emp => [
+                emp.nombre,
+                `$${emp.salarioBase.toFixed(2)}`,
+                `$${emp.isss.toFixed(2)}`,
+                `$${emp.afp.toFixed(2)}`,
+                `$${emp.renta.toFixed(2)}`,
+                `$${emp.totalDescuentos.toFixed(2)}`,
+                `$${emp.salarioNeto.toFixed(2)}`
+            ]);
+
+            doc.autoTable({
+                startY: 34,
+                head: [['Empleado', 'Salario Base', 'ISSS (3%)', 'AFP (7.2%)', 'Renta (ISR)', 'Total Desc.', 'Salario Neto']],
+                body: tableData,
+                theme: 'striped',
+                headStyles: { fillColor: [15, 23, 42] }
+            });
+
+            doc.save("planilla_nomina_elsalvador.pdf");
+        }
+
+        function regresarMenu() {
+            window.location.href = '../index.html';
+        }
+    </script>
+</body>
+</html>
